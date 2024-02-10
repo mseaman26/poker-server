@@ -12,7 +12,7 @@ const port = process.env.PORT || 3001;
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' ? 'https://poker-qhzirl2d1-mseaman26.vercel.app/' : 'http://localhost:3000', // Update with your production app's URL
+    origin: process.env.NODE_ENV === 'production' ? 'https://poker-qhzirl2d1-mseaman26.vercel.app' : 'http://localhost:3000', // Update with your production app's URL
     methods: ["GET", "POST", "DELETE", "PUT"],
   },
 });
