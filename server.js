@@ -12,7 +12,7 @@ const port = process.env.PORT || 3001;
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' ? 'https://your-production-app.com' : 'http://localhost:3000', // Update with your production app's URL
+    origin: process.env.NODE_ENV === 'production' ? 'https://poker-server-2d3e5c5dcd63.herokuapp.com' : 'http://localhost:3000', // Update with your production app's URL
     methods: ["GET", "POST", "DELETE", "PUT"],
   },
 });
