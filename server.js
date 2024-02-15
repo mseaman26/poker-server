@@ -25,8 +25,9 @@ io.on("connection", (socket) => {
 
   socket.on('activate user', (data) => {
     console.log('data into server socket: ', data)
-    if(!activeUsers.has(data.email)){
-      activeUsers.set(socket.id, {email: data.email, username: data.username, socketId: socket.id})
+    if(!activeUsers.has(data.id)){
+      activeUsers.set(socket.id, {id: data.id, email: data.email, username: data.username, socketId: socket.id})
+      
     }
     console.log('array being sent to everyone after activating user: ', Array.from(activeUsers.values()))
     io.emit('active users', Array.from(activeUsers.values()))
