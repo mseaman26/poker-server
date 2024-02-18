@@ -28,14 +28,15 @@ io.on("connection", (socket) => {
     console.log('data into server socket: ', data)
     if(!activeUsers.has(data.id)){
       activeUsers.set(socket.id, {id: data.id, email: data.email, username: data.username, socketId: socket.id})
-      // userToSocketId.set(data.id, socket.id)
-      // console.log('userId to socket id: ', userToSocketId)
+      userToSocketId.set(data.id, socket.id)
+      console.log('userId to socket id: ', userToSocketId)
     }
     console.log('array being sent to everyone after activating user: ', Array.from(activeUsers.values()))
     io.emit('active users', Array.from(activeUsers.values()))
   })
   socket.on('request active users', () => {
     console.log('raw map: ', activeUsers)
+    console.log('userToSocketId: ',userToSocketId)
     console.log('sending array from server to everyone ', Array.from(activeUsers.values()))
     io.emit('active users', Array.from(activeUsers.values()))
   })
@@ -45,12 +46,13 @@ io.on("connection", (socket) => {
     console.log('socket id of friend: ', socketId)
     socket.to(socketId).emit('friend change')
   })
-  // socket.on('user refresh', (data) => {
-  //   console.log('refresh user: ', data )
-  //   let socketId = userToSocketId(data.userId)
-  //   console.log('socket id of friend: ', socketId)
-  //   socket.to(socketId).emit('user refresh')
-  // })
+  socket.on('friend refresh', (data) => {
+    console.log('refresh user: ', data )
+    console.log(userToSocketId)
+    let socketId = userToSocketId.get(data.friendId);
+    console.log('socket id of friend in user refresh: ', socketId)
+    socket.to(socketId).emit('user refresh')
+  })
   socket.on('disconnect', () => {
     console.log('user disconnected: ',socket.id)
     activeUsers.delete(socket.id)
