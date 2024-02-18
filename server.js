@@ -19,6 +19,7 @@ const io = new Server(server, {
 
 //map for keeping track of online uses
 const activeUsers = new Map()
+const userToSocketId = new Map()
 
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
@@ -27,25 +28,29 @@ io.on("connection", (socket) => {
     console.log('data into server socket: ', data)
     if(!activeUsers.has(data.id)){
       activeUsers.set(socket.id, {id: data.id, email: data.email, username: data.username, socketId: socket.id})
-      
+      // userToSocketId.set(data.id, socket.id)
+      // console.log('userId to socket id: ', userToSocketId)
     }
     console.log('array being sent to everyone after activating user: ', Array.from(activeUsers.values()))
     io.emit('active users', Array.from(activeUsers.values()))
   })
   socket.on('request active users', () => {
+    console.log('raw map: ', activeUsers)
     console.log('sending array from server to everyone ', Array.from(activeUsers.values()))
     io.emit('active users', Array.from(activeUsers.values()))
   })
-  socket.on("join_room", (data) => {
-    socket.join(data);
-  });
-  socket.on('broadcast message', (message) => {
-    console.log('broadcast recieved: ',message)
-    socket.broadcast.emit('broadcast message', message)
+  socket.on('friend change', (data) => {
+    console.log('friend change event, userID: ', data.userId)
+    let socketId = userToSocketId.get(data.userId)
+    console.log('socket id of friend: ', socketId)
+    socket.to(socketId).emit('friend change')
   })
-  socket.on("send_message", (data) => {
-    socket.to(data.room).emit("receive_message", data);
-  });
+  // socket.on('user refresh', (data) => {
+  //   console.log('refresh user: ', data )
+  //   let socketId = userToSocketId(data.userId)
+  //   console.log('socket id of friend: ', socketId)
+  //   socket.to(socketId).emit('user refresh')
+  // })
   socket.on('disconnect', () => {
     console.log('user disconnected: ',socket.id)
     activeUsers.delete(socket.id)
