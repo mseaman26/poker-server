@@ -47,7 +47,7 @@ io.on("connection", (socket) => {
     socket.to(socketId).emit('friend change')
   })
   socket.on('friend refresh', (data) => {
-    console.log('refresh user: ', data )
+    console.log('friend refresh: ', data )
     console.log(userToSocketId)
     let socketId = userToSocketId.get(data.friendId);
     console.log('socket id of friend in user refresh: ', socketId)
