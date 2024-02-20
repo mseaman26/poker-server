@@ -40,18 +40,26 @@ io.on("connection", (socket) => {
     console.log('sending array from server to everyone ', Array.from(activeUsers.values()))
     io.emit('active users', Array.from(activeUsers.values()))
   })
-  socket.on('friend change', (data) => {
-    console.log('friend change event, userID: ', data.userId)
-    let socketId = userToSocketId.get(data.userId)
-    console.log('socket id of friend: ', socketId)
-    socket.to(socketId).emit('friend change')
-  })
+  // socket.on('friend change', (data) => {
+  //   console.log('friend change event, userID: ', data.userId)
+  //   let socketId = userToSocketId.get(data.userId)
+  //   console.log('socket id of friend: ', socketId)
+  //   socket.to(socketId).emit('friend change')
+  // })
   socket.on('friend refresh', (data) => {
     console.log('friend refresh: ', data )
     console.log(userToSocketId)
     let socketId = userToSocketId.get(data.friendId);
     console.log('socket id of friend in user refresh: ', socketId)
-    socket.to(socketId).emit('user refresh')
+    socket.to(socketId).emit('friend refresh')
+  })
+  socket.on('friends refresh', (data) => {
+    console.log('friends refresh data: ', data )
+    data.forEach(friendId => {
+      let socketId = userToSocketId.get(friendId);
+      console.log('socket id of friend in friends refresh: ', socketId)
+      socket.to(socketId).emit('friend refresh')
+    })
   })
   socket.on('disconnect', () => {
     console.log('user disconnected: ',socket.id)
