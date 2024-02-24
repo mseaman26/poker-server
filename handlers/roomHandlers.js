@@ -9,18 +9,17 @@ export const handleJoinRoom = (io, socket, room, userId) => {
         usersInRooms.set(room, new Map());
     }
     
-    usersInRooms.get(room).set(socket.id, { room, userId});
+    usersInRooms.get(room).set(socket.id, { userId});
     console.log('usersInRooms: ', usersInRooms)
 
     io.to(room).emit('userJoined', { userId });
 
     socket.join(room);
 
-    io.to(room).emit('updateUserList', Array.from(usersInRooms.get(room).values()));
+    io.to(room).emit('updated users in room', Array.from(usersInRooms.get(room).values()));
 }
 
 export const handleLeaveRoom = (io, socket, room, userId) => {
-  console.log('handleLeaveRoom: ', room)
   console.log('usersInRooms before leaving: ', usersInRooms)
   console.log('socket id before leaving: ', socket.id)
   usersInRooms.get(room).delete(socket.id);
@@ -29,8 +28,8 @@ export const handleLeaveRoom = (io, socket, room, userId) => {
   io.to(room).emit('userLeft', { username: 'User' });
 
   socket.leave(room);
-  
-  io.to(room).emit('updateUserList', Array.from(usersInRooms.get(room).values()));
+
+  io.to(room).emit('updated users in room', Array.from(usersInRooms.get(room).values()));
 }
 
 // export const handleDisconnectFromRoom = (io, socket) => {
