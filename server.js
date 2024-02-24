@@ -3,6 +3,7 @@ const app = express();
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
+import { handleJoinRoom, handleLeaveRoom } from "./handlers/roomHandlers.js";
 
 app.use(cors());
 
@@ -25,27 +26,16 @@ io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
   socket.on('activate user', (data) => {
-    console.log('data into server socket: ', data)
+    console.log('activate user: ', data)
     if(!activeUsers.has(data.id)){
       activeUsers.set(socket.id, {id: data.id, email: data.email, username: data.username, socketId: socket.id})
       userToSocketId.set(data.id, socket.id)
-      console.log('userId to socket id: ', userToSocketId)
     }
-    console.log('array being sent to everyone after activating user: ', Array.from(activeUsers.values()))
     io.emit('active users', Array.from(activeUsers.values()))
   })
   socket.on('request active users', () => {
-    console.log('raw map: ', activeUsers)
-    console.log('userToSocketId: ',userToSocketId)
-    console.log('sending array from server to everyone ', Array.from(activeUsers.values()))
     io.emit('active users', Array.from(activeUsers.values()))
   })
-  // socket.on('friend change', (data) => {
-  //   console.log('friend change event, userID: ', data.userId)
-  //   let socketId = userToSocketId.get(data.userId)
-  //   console.log('socket id of friend: ', socketId)
-  //   socket.to(socketId).emit('friend change')
-  // })
   socket.on('friend refresh', (data) => {
     console.log('friend refresh: ', data )
     console.log(userToSocketId)
@@ -61,6 +51,21 @@ io.on("connection", (socket) => {
       socket.to(socketId).emit('friend refresh')
     })
   })
+  // //room handlers
+  socket.on('join room', (data) => {
+    console.log('join room data: ', data)
+    handleJoinRoom(io, socket, data.gameId, data.userId);
+  });
+
+  socket.on('leave room', (data ) => {
+    console.log('leave room data: ', data)
+    handleLeaveRoom(io, socket, data.gameId, data.userId);
+  });
+  //disconnect from room handler
+  // socket.on('disconnect', () => {
+  //   handleDisconnectFromRoom(io, socket);
+  // });
+  //main disconnect handler
   socket.on('disconnect', () => {
     console.log('user disconnected: ',socket.id)
     activeUsers.delete(socket.id)
