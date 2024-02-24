@@ -54,7 +54,7 @@ io.on("connection", (socket) => {
   // //room handlers
   socket.on('join room', (data) => {
     console.log('join room data: ', data)
-    handleJoinRoom(io, socket, data.gameId, data.userId);
+    handleJoinRoom(io, socket, data.gameId, data.userId, data.username);
   });
 
   socket.on('leave room', (data ) => {

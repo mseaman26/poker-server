@@ -1,7 +1,7 @@
 // socketHandler.js
 const usersInRooms = new Map();
 
-export const handleJoinRoom = (io, socket, room, userId) => {
+export const handleJoinRoom = (io, socket, room, userId, username) => {
     console.log('joining room: ', room)
     console.log('socket id: ', socket.id)
     console.log('userId: ', userId) 
@@ -9,28 +9,42 @@ export const handleJoinRoom = (io, socket, room, userId) => {
         usersInRooms.set(room, new Map());
     }
     
-    usersInRooms.get(room).set(socket.id, { userId});
+    usersInRooms.get(room).set(socket.id, { userId, username});
     console.log('usersInRooms: ', usersInRooms)
 
     io.to(room).emit('userJoined', { userId });
 
     socket.join(room);
-
+    console.log('emmited updated users in room: ', Array.from(usersInRooms.get(room).values()));
     io.to(room).emit('updated users in room', Array.from(usersInRooms.get(room).values()));
 }
 
 export const handleLeaveRoom = (io, socket, room, userId) => {
-  console.log('usersInRooms before leaving: ', usersInRooms)
-  console.log('socket id before leaving: ', socket.id)
-  usersInRooms.get(room).delete(socket.id);
-  console.log('usersInRooms after leaving: ', usersInRooms)
+  console.log('usersInRooms before leaving: ', usersInRooms);
 
-  io.to(room).emit('userLeft', { username: 'User' });
+  // Check if the room key exists in the usersInRooms Map
+  if (usersInRooms.has(room)) {
+    console.log('socket id before leaving: ', socket.id);
 
-  socket.leave(room);
+    // Check if the socket.id key exists in the room Map
+    if (usersInRooms.get(room).has(socket.id)) {
+      // Remove the socket.id from the room Map
+      usersInRooms.get(room).delete(socket.id);
+    } else {
+      console.error('socket.id not found in the room:', socket.id);
+    }
+    console.log('usersInRooms after leaving: ', usersInRooms);
+    io.to(room).emit('userLeft', { username: 'User' });
+    socket.leave(room);
 
-  io.to(room).emit('updated users in room', Array.from(usersInRooms.get(room).values()));
-}
+    // Emit the updated users in room event
+    console.log('emmited updated users in room: ', Array.from(usersInRooms.get(room).values()));
+    io.to(room).emit('updated users in room', Array.from(usersInRooms.get(room).values()));
+  } else {
+    console.error('Room not found in usersInRooms:', room);
+  }
+};
+
 
 // export const handleDisconnectFromRoom = (io, socket) => {
 //   usersInRooms.forEach((roomUsers, room) => {
