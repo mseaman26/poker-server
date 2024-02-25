@@ -9,14 +9,20 @@ export const handleJoinRoom = (io, socket, room, userId, username) => {
         usersInRooms.set(room, new Map());
     }
     
-    usersInRooms.get(room).set(socket.id, { userId, username});
-    console.log('usersInRooms: ', usersInRooms)
+    const existingUser = Array.from(usersInRooms.get(room).values()).find(user => user.userId === userId);
 
-    io.to(room).emit('userJoined', { userId });
+    if (!existingUser) {
+      usersInRooms.get(room).set(socket.id, { userId, username });
+      console.log('usersInRooms: ', usersInRooms)
 
-    socket.join(room);
-    console.log('emmited updated users in room: ', Array.from(usersInRooms.get(room).values()));
-    io.to(room).emit('updated users in room', Array.from(usersInRooms.get(room).values()));
+      io.to(room).emit('userJoined', { userId });
+
+      socket.join(room);
+      console.log('emitted updated users in room: ', Array.from(usersInRooms.get(room).values()));
+      io.to(room).emit('updated users in room', Array.from(usersInRooms.get(room).values()));
+  } else {
+      console.log(`User with userId ${userId} is already in the room.`);
+  }
 }
 
 export const handleLeaveRoom = (io, socket, room, userId) => {
@@ -44,18 +50,14 @@ export const handleLeaveRoom = (io, socket, room, userId) => {
     console.error('Room not found in usersInRooms:', room);
   }
 };
+export const handleRoomDeleted = (room) => {
+  console.log('room deleted: ', room);
+  if (usersInRooms.has(room)) {
+    usersInRooms.delete(room);
+  } else {
+    console.error('Room not found in usersInRooms:', room);
+  }
+}
 
-
-// export const handleDisconnectFromRoom = (io, socket) => {
-//   usersInRooms.forEach((roomUsers, room) => {
-//     if (roomUsers.has(socket.id)) {
-//       roomUsers.delete(socket.id);
-
-//       io.to(room).emit('userLeft', { username: 'User' });
-
-//       io.to(room).emit('updateUserList', Array.from(roomUsers.values()));
-//     }
-//   });
-// }
 
 

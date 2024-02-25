@@ -3,7 +3,7 @@ const app = express();
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
-import { handleJoinRoom, handleLeaveRoom } from "./handlers/roomHandlers.js";
+import { handleJoinRoom, handleLeaveRoom, handleRoomDeleted } from "./handlers/roomHandlers.js";
 
 app.use(cors());
 
@@ -56,16 +56,19 @@ io.on("connection", (socket) => {
     console.log('join room data: ', data)
     handleJoinRoom(io, socket, data.gameId, data.userId, data.username);
   });
-
+  socket.on('chat message', (data) => {
+    console.log('chat message data: ', data)
+    io.to(data.gameId).emit('chat message', data);
+  })
   socket.on('leave room', (data ) => {
     console.log('leave room data: ', data)
     handleLeaveRoom(io, socket, data.gameId, data.userId);
   });
-  //disconnect from room handler
-  // socket.on('disconnect', () => {
-  //   handleDisconnectFromRoom(io, socket);
-  // });
-  //main disconnect handler
+  socket.on('room deleted', (data) => {
+    console.log('room deleted data: ', data)
+    handleRoomDeleted(data.gameId);
+  })
+
   socket.on('disconnect', () => {
     console.log('user disconnected: ',socket.id)
     activeUsers.delete(socket.id)
