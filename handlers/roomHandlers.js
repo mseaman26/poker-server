@@ -23,6 +23,7 @@ export const handleJoinRoom = (io, socket, room, userId, username) => {
   } else {
       console.log(`User with userId ${userId} is already in the room.`);
   }
+  
 }
 
 export const handleLeaveRoom = (io, socket, room, userId) => {
@@ -50,6 +51,7 @@ export const handleLeaveRoom = (io, socket, room, userId) => {
     console.error('Room not found in usersInRooms:', room);
   }
 };
+
 export const handleRoomDeleted = (room) => {
   console.log('room deleted: ', room);
   if (usersInRooms.has(room)) {

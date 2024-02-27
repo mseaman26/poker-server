@@ -4,6 +4,7 @@ import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import { handleJoinRoom, handleLeaveRoom, handleRoomDeleted } from "./handlers/roomHandlers.js";
+import { handleGameEvents } from "./handlers/gameHandlers.js";
 
 app.use(cors());
 
@@ -56,6 +57,9 @@ io.on("connection", (socket) => {
     console.log('join room data: ', data)
     handleJoinRoom(io, socket, data.gameId, data.userId, data.username);
   });
+
+
+
   socket.on('chat message', (data) => {
     console.log('chat message data: ', data)
     io.to(data.gameId).emit('chat message', data);
@@ -68,6 +72,9 @@ io.on("connection", (socket) => {
     console.log('room deleted data: ', data)
     handleRoomDeleted(data.gameId);
   })
+
+  //game handlers
+  handleGameEvents(io, socket);
 
   socket.on('disconnect', () => {
     console.log('user disconnected: ',socket.id)
