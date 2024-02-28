@@ -23,7 +23,7 @@ const io = new Server(server, {
 const activeUsers = new Map()
 const userToSocketId = new Map()
 
-io.on("connection", (socket) => {
+io.on("connection", (socket) =>   {
   console.log(`User Connected: ${socket.id}`);
 
   socket.on('activate user', (data) => {

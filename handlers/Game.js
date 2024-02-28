@@ -6,7 +6,11 @@ export class Game{
         this.active = false;
     }
     nextTurn(){
+        console.log('players.length: ', this.players.length)
         this.turn = (this.turn + 1) % this.players.length;
+    }
+    getCurrentPlayerId(){
+        return this.players[this.turn];
     }
 }
 
