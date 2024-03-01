@@ -20,18 +20,11 @@ export function handleGameEvents (io, socket){
         if(activeGames.has(roomId)){
             console.log('emitting game state')
             io.to(roomId).emit('game state', activeGames.get(roomId));
-        }else{
-            io.to(roomId).emit('game state', {});
         }
+        // else{
+        //     io.to(roomId).emit('game state', {});
+        // }
     })
-    socket.on('end game', (roomId) => {
-        console.log('game ended: ', roomId)
-        activeGames.delete(roomId);
-        // activeGames.get(roomId).active = false;
-        console.log('active games: ', activeGames)
-        socket.to(roomId).emit('game ended');
-    });
-
     socket.on('next turn', async (data) => {
         console.log('roomId: ', data.roomId)
         console.log('actve games: ', activeGames)
@@ -39,5 +32,22 @@ export function handleGameEvents (io, socket){
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
 
     });
+    socket.on('next hand', async (roomId) => {
+        console.log('roomId: ', roomId)
+        console.log('actve games: ', activeGames)   
+        await activeGames.get(roomId).nextHand();
+        io.to(roomId).emit('game state', activeGames.get(roomId));
+
+    });
+    socket.on('end game', (roomId) => {
+        console.log('game ended: ', roomId)
+        activeGames.delete(roomId);
+        // activeGames.get(roomId).active = false;
+        console.log('active games: ', activeGames)
+        socket.to(roomId).emit('game ended');
+        io.to(roomId).emit('game state', {});
+    });
+
+    
 
 }
