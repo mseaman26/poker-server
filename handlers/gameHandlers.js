@@ -37,6 +37,12 @@ export function handleGameEvents (io, socket){
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
 
     });
+    socket.on('bet', (data) => {
+        console.log('bet data: ', data)
+        activeGames.get(data.roomId).bet(data.amount);
+        console.log('game after bet: ', activeGames.get(data.roomId))
+        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+    })
     socket.on('next hand', async (roomId, callback) => {
         console.log('roomId: ', roomId)
         console.log('actve games: ', activeGames)   

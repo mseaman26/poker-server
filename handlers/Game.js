@@ -11,6 +11,8 @@ export class Game{
         this.round = 0;
         this.turn = (this.dealer + 3) % this.players.length;
         this.bigBlind = bigBlind
+        this.currentBet = 0;
+
         
     }
     nextTurn(){
@@ -21,8 +23,12 @@ export class Game{
         this.dealer = (this.dealer + 1) % this.players.length;
         this.turn = (this.dealer + 3) % this.players.length;
     }
-    getCurrentPlayerId(){
-        return this.players[this.turn];
+    bet(amount){
+        this.currentBet = amount;
+        this.pot += amount;
+        this.players[this.turn].chips -= amount;
+        this.nextTurn();    
     }
+
 }
 
