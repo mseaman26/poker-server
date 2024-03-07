@@ -21,6 +21,7 @@ export const handleJoinRoom = (io, socket, room, userId, username) => {
       console.log('emitted updated users in room: ', Array.from(usersInRooms.get(room).values()));
       io.to(room).emit('updated users in room', Array.from(usersInRooms.get(room).values()));
   } else {
+      console.log('users in room:', usersInRooms.get(room));
       console.log(`User with userId ${userId} is already in the room.`);
   }
   

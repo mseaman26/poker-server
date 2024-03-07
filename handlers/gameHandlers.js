@@ -70,10 +70,10 @@ export function handleGameEvents (io, socket){
         io.to(roomId).emit('next round', activeGames.get(roomId));
         io.to(roomId).emit('game state', activeGames.get(roomId));
     });
-    socket.on('win hand', (data) => {
+    socket.on('win hand', async (data) => {
         console.log('win hand data: ', data)
         console.log('win hand turn: ', data.turn)
-        activeGames.get(data.roomId).winHand();
+        await activeGames.get(data.roomId).winHand();
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     });
     socket.on('next hand', async (roomId, callback) => {

@@ -14,7 +14,7 @@ export class Game{
         this.currentBet = 0;
         this.betIndex = null
         this.foldedCount = 0;
-
+        
     }
     nextTurn(){
         console.log('players.length: ', this.players.length)
@@ -30,6 +30,8 @@ export class Game{
         this.betIndex = null;
     }
     nextHand(){
+        this.players = this.players.filter(player => player.chips > 0);
+        console.log('players after removal: ', this.players)
         for(let i = 0; i < this.players.length; i++){
             this.players[i].bet = 0;
         }
