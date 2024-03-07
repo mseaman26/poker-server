@@ -13,6 +13,19 @@ export function handleGameEvents (io, socket){
         for(let i = 0; i < players.length; i++){
             players[i].chips = data.buyIn;
         }
+        for(let i = 0; i < players.length; i++){
+            players[i].moneyInPot = 0;
+        }
+        let dealer = (activeGames.get(data.roomId).dealer)
+        players[(dealer + 1) % players.length].chips -= data.bigBlind / 2;
+        players[(dealer + 1) % players.length].bet = data.bigBlind / 2;  
+        players[(dealer + 1) % players.length].moneyInPot = data.bigBlind / 2;
+        players[(dealer + 2) % players.length].chips -= data.bigBlind;
+        players[(dealer + 2) % players.length].bet = data.bigBlind;
+        players[(dealer + 2) % players.length].moneyInPot = data.bigBlind;
+        activeGames.get(data.roomId).pot += data.bigBlind + data.bigBlind / 2;
+        activeGames.get(data.roomId).currentBet = data.bigBlind;
+
         console.log('active games: ', activeGames);
         console.log('game: ', activeGames.get(data.roomId));
         console.log('players: ', activeGames.get(data.roomId).players);
@@ -43,6 +56,26 @@ export function handleGameEvents (io, socket){
         console.log('game after bet: ', activeGames.get(data.roomId))
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
+    socket.on('fold', (data) => {
+        console.log('fold data: ', data)
+        activeGames.get(data.roomId).players[data.turn].folded = true;
+        activeGames.get(data.roomId).foldedCount += 1;
+        activeGames.get(data.roomId).nextTurn();
+        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+    })
+    socket.on('next round', async (roomId) => {
+        console.log('next roundroomId: ', roomId)
+        console.log('actve games: ', activeGames)   
+        await activeGames.get(roomId).nextRound();
+        io.to(roomId).emit('next round', activeGames.get(roomId));
+        io.to(roomId).emit('game state', activeGames.get(roomId));
+    });
+    socket.on('win hand', (data) => {
+        console.log('win hand data: ', data)
+        console.log('win hand turn: ', data.turn)
+        activeGames.get(data.roomId).winHand();
+        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+    });
     socket.on('next hand', async (roomId, callback) => {
         console.log('roomId: ', roomId)
         console.log('actve games: ', activeGames)   
