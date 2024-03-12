@@ -39,6 +39,10 @@ describe('Game', () => {
     test('should return expected chip values after some betting', () => {
         const players = [
             {
+                id: 0,
+                username: 'test0',    
+            },
+            {
                 id: 1,
                 username: 'test1',    
             },
@@ -52,11 +56,7 @@ describe('Game', () => {
             },
             {
                 id: 4,
-                username: 'test4',    
-            },
-            {
-                id: 5,
-                username: 'test5',
+                username: 'test4',
             }
         ]
         const game = new Game(1, players, 0, 100, 1000)
@@ -89,6 +89,9 @@ describe('Game', () => {
         game.players[2].chips = 500
         game.players[3].chips = 250
         game.players[4].chips = 1250
+        for(let i = 0; i < game.players.length; i++){
+            game.players[i].moneyInPot = 0
+        }
         //total chips 3750
         game.pot = 0
 
@@ -110,6 +113,8 @@ describe('Game', () => {
         game.bet(250) //0 call  750 D
         game.bet(750) //1 raise all in *B  0
         game.bet(500) //2 all in (cant cover)  0
+        expect(game.players[2].chips).toBe(0)
+        expect(game.players[2].moneyInPot).toBe(500)
         game.bet(500) //4 call 500
         game.bet(500) //0 call 250
         expect(game.allInCount).toBe(3)
@@ -120,6 +125,17 @@ describe('Game', () => {
         expect(game.round).toBe(2)
         expect(game.turn).toBe(4)
         expect(game.betIndex).toBe(null)
+        expect(game.players[0].maxWin).toBe(null)
+        expect(game.players[1].maxWin).toBe(3000)
+        expect(game.players[2].maxWin).toBe(2250)
+        expect(game.players[3].maxWin).toBe(1250)
+        expect(game.players[4].maxWin).toBe(null)
+        expect(game.players[1].chips).toBe(0)
+        expect(game.players[1].moneyInPot).toBe(750)
+        expect(game.players[2].moneyInPot).toBe(500)
+
+        expect(game.players[2].chips).toBe(0)
+        expect(game.players[3].chips).toBe(0)
         betSum = 0
         chipsSum = 0
         for(let i = 0; i < game.players.length; i++){
@@ -132,12 +148,23 @@ describe('Game', () => {
         expect(game.pot).toBe(3000)
         players[0].numericalHand = 80
         players[1].numericalHand = 55
-        players[2].numericalHand = 22
+        players[2].numericalHand = 55
         players[3].numericalHand = 80
         players[4].numericalHand = 55
+        console.log('game before handle numerical hands: ', game)
+        game.handleNumericalHands()
+        console.log('game after handle numerical hands: ', game)
         
-
-        console.log('hands: ', game.handleNumericalHands())
-
+        betSum = 0
+        chipsSum = 0
+        for(let i = 0; i < game.players.length; i++){
+            betSum += players[i].bet
+        }
+        for(let i = 0; i < game.players.length; i++){
+            chipsSum += players[i].chips
+        }
+        expect(game.round).toBe(2)
+        expect(game.pot).toBe(0)
+        expect(betSum + chipsSum + game.pot).toBe(3750)
     })
 })
