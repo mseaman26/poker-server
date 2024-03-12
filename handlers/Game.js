@@ -83,7 +83,7 @@ export class Game{
     }
     nextHand(){
         this.players = this.players.filter(player => player.chips > 0);
-        console.log('players after removal: ', this.players)
+        // console.log('players after removal: ', this.players)
         for(let i = 0; i < this.players.length; i++){
             this.players[i].bet = 0;
             this.players[i].allIn = null;
@@ -134,28 +134,22 @@ export class Game{
         this.betIndex = null;
     }
     bet(amount){
-        // for(let i = 0; i < this.players.length; i++){
-        //     if(this.players[i].allIn !== null){
-        //         let newMax = 0
-        //         for(let j = 0; j < this.players.length; j++){
-        //             newMax += Math.min(this.players[j].bet, this.players[i].allIn);
-        //         }
-        //         this.players[i].maxWin = newMax;
-        //     }
-        // }
+
         if(this.players[this.turn].bet + amount > this.currentBet){
             this.betIndex = this.turn;
         }
         if(this.betIndex === null){
             this.betIndex = this.turn;
         }
+        //if the amount plus the current bet is greater than or equal to the current bet, then the current bet is the amount plus the current bet
         if(!(amount + this.players[this.turn].bet < this.currentBet)){
             this.currentBet = amount + this.players[this.turn].bet;
             // this.players[this.turn].allIn = amount + this.players[this.turn].bet;
         }
-        this.pot += amount;
+        this.pot += Math.min(amount, this.players[this.turn].chips);
         if(this.players[this.turn].chips <= amount){
-            this.players[this.turn].allIn = this.players[this.turn].chips;
+            console.log(this.players[this.turn], ' is all in, but cant cover ', this.currentBet - this.players[this.turn].bet, ' chips.')
+            this.players[this.turn].allIn = this.players[this.turn].chips + this.players[this.turn].moneyInPot;
             this.allInCount += 1;
             this.players[this.turn].chips = 0;
             this.players[this.turn].moneyInPot += this.players[this.turn].allIn;
@@ -167,7 +161,7 @@ export class Game{
         }
 
         
-        
+        console.log('pot at end of bet for player 1: ', this.pot)
         this.nextTurn();    
     }
     fold(){
@@ -182,12 +176,10 @@ export class Game{
     }
     handleNumericalHands(){
         let nonFoldedPlayers = this.players.filter(player => player.folded === false);
-        console.log('players: ', this.players);
         let hands = nonFoldedPlayers.map((player, index) => {
             return { index: index, numericalHand: player.numericalHand, allIn: player.allIn };
         });
-        
-        console.log('hands:', hands);
+
         
         const groupedHands = {};
         for (let i = 0; i < hands.length; i++) {
@@ -221,6 +213,8 @@ export class Game{
         //
         for(let i = 0; i < handledHands.length; i++){
             if(this.pot > 0){
+                let winningsTotal = 0;
+                let splitDenom = handledHands[i].length;
                 for(let j = 0; j < handledHands[i].length; j++){
                     //if current winner is not all in
                     if(this.players[handledHands[i][j].index].allIn === null){
@@ -230,14 +224,32 @@ export class Game{
                     }else{
                     //if current winner is all in
                         let splitPot = 0
-                        for(let k = 0; k < this.players.length; k++){
-                            splitPot += Math.min(this.players[k].moneyInPot, this.players[handledHands[i][j].index].allIn);
+                        if(handledHands[i][j].index === 1){
+                            console.log('pot before calculating splitpot: ', this.pot)
+                            console.log('denom', splitDenom)
                         }
-                        console.log(handledHands[i][j].index, " won a portion of the chips and gets: ", splitPot, " chips.")
-                        let carryOver = this.pot % handledHands[i].length;
+                        for(let k = 0; k < this.players.length; k++){
+                            //up up each players match bet to the all in amount
+                            splitPot += Math.min(this.players[k].moneyInPot, this.players[handledHands[i][j].index].allIn);
+                            if(handledHands[i][j].index === 1){
+                                console.log('splitPot: ', splitPot)
+                            }
+
+                        }
+                        splitPot = Math.min(splitPot, this.pot);
+                        console.log(handledHands[i][j].index, " won a portion of the "+splitPot+" and gets: ", Math.floor(splitPot/ splitDenom), " chips.")
+                        console.log('it was split: ', splitDenom," ways.")
+                        let carryOver =  this.pot % handledHands[i].length;
                         console.log('carryOver: ', carryOver)
-                        this.players[handledHands[i][j].index].chips += splitPot;
-                        this.pot -= splitPot;
+                        this.players[handledHands[i][j].index].chips += Math.floor(splitPot/ splitDenom);
+                        this.pot -= Math.floor(splitPot/ splitDenom);
+                        console.log('pot after split: ', this.pot)
+
+                        if(this.pot - carryOver === 0){
+                            this.carryOver = carryOver;
+                            this.pot = 0;
+                        }
+                        splitDenom--
                     }
                 }
                 for(let k = 0; k < this.players.length; k++){
