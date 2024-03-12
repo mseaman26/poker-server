@@ -61,13 +61,14 @@ describe('Game', () => {
         ]
         const game = new Game(1, players, 0, 100, 1000)
         game.startGame()
-        game.bet(100)
-        game.bet(100)
-        game.bet(100)
-        game.bet(50)
-        game.bet(0)
-        //round 1
-        expect(game.round).toBe(1)
+        expect(game.turn).toBe(3)
+        game.bet(100) //3
+        expect(game.betIndex).toBe(3)
+        game.bet(100) //4
+        game.bet(100) //0
+        game.bet(50) //1
+        
+        expect(game.round).toBe(0)
         let betSum = 0
         let chipsSum = 0
         for(let i = 0; i < game.players.length; i++){
@@ -76,7 +77,16 @@ describe('Game', () => {
         for(let i = 0; i < game.players.length; i++){
             chipsSum += players[i].chips
         }
-        expect(betSum + chipsSum + game.pot).toBe(5000)
+        expect(betSum).toBe(500)
+        // expect(betSum + chipsSum).toBe(5000)
+        expect(game.pot + chipsSum).toBe(5000)
+
+        game.bet(0) //2
+        //round 1
+        expect(game.round).toBe(1)
+        expect(game.dealer).toBe(0)
+        expect(game.turn).toBe(1)
+
         expect(game.players[0].chips).toBe(900)
         expect(game.players[1].chips).toBe(900)
         expect(game.players[2].chips).toBe(900)
@@ -124,7 +134,7 @@ describe('Game', () => {
         // round 2
         expect(game.pot).toBe(3000)
         expect(game.round).toBe(2)
-        expect(game.turn).toBe(4)
+        expect(game.turn).toBe(4) // because players 1,2, and 3 are all in
         expect(game.betIndex).toBe(null)
         expect(game.players[0].maxWin).toBe(null)
         expect(game.players[1].maxWin).toBe(3000)
@@ -154,21 +164,41 @@ describe('Game', () => {
         players[2].numericalHand = 55
         players[3].numericalHand = 80
         players[4].numericalHand = 55
+
         game.handleNumericalHands()
-        
+        //hand 2 round 0 dealer 1
         betSum = 0
         chipsSum = 0
+        expect(game.players.length).toBe(3)
         for(let i = 0; i < game.players.length; i++){
-            betSum += players[i].bet
+            betSum += game.players[i].bet
         }
+        expect(betSum).toBe(150)
         for(let i = 0; i < game.players.length; i++){
-            chipsSum += players[i].chips
+            chipsSum += game.players[i].chips
         }
-        expect(game.round).toBe(2)
-        expect(game.pot).toBe(0)
-        expect(betSum + chipsSum + game.pot).toBe(3750)
-        expect(game.players[3].chips).toBe(625)
-        expect(game.players[0].chips).toBe(2625)
-        console.log('players at end of test 1', game.players)
+        expect(game.round).toBe(0)
+
+        expect(game.pot).toBe(150)
+        expect(chipsSum).toBe(3600)
+        expect(game.dealer).toBe(1)
+        expect(game.turn).toBe(1)
+        expect(betSum + chipsSum).toBe(3750)
+        expect(game.pot + chipsSum).toBe(3750)
+        expect(game.players[1].chips).toBe(625)
+        expect(game.players[0].chips).toBe(2525)
+
+        //hand 2 round 0 betting
+        game.bet(625) //1
+        expect(game.players[1].allIn).toBe(625)
+        expect(game.players[1].chips).toBe(0)
+        game.bet(625) //2
+        expect(game.players[2].allIn).toBe(500)
+        expect(game.players[2].chips).toBe(0)
+        expect(game.pot).toBe(1225)
+
+
+        console.log('game at end of test 1', game)
+
     })
 })

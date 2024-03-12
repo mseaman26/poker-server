@@ -12,7 +12,7 @@ export class Game{
         this.smallBlindId = this.players[(this.dealer + 1) % this.players.length];
         this.bigBlindId = this.players[(this.dealer + 2) % this.players.length];
         this.round = 0;
-        this.turn = (this.dealer + 3) % this.players.length;
+        this.turn = (this.dealer + 1) % this.players.length;
         this.bigBlind = bigBlind
         this.currentBet = 0;
         this.betIndex = null
@@ -33,12 +33,16 @@ export class Game{
             this.players[i].moneyInPot = 0;
         }
 
-        this.players[(this.dealer + 1) % this.players.length].chips -= this.bigBlind / 2;
-        this.players[(this.dealer + 1) % this.players.length].bet = this.bigBlind / 2;
-        this.players[(this.dealer + 2) % this.players.length].chips -= this.bigBlind;
-        this.players[(this.dealer + 2) % this.players.length].bet = this.bigBlind;
-        this.pot += this.bigBlind + this.bigBlind / 2;
-        this.currentBet = this.bigBlind;
+        this.bet(this.bigBlind / 2);
+        this.bet(this.bigBlind);
+        this.betIndex = null;
+        console.log('!!! this turn: ', this.turn)
+        // this.players[(this.dealer + 1) % this.players.length].chips -= this.bigBlind / 2;
+        // this.players[(this.dealer + 1) % this.players.length].bet = this.bigBlind / 2;
+        // this.players[(this.dealer + 2) % this.players.length].chips -= this.bigBlind;
+        // this.players[(this.dealer + 2) % this.players.length].bet = this.bigBlind;
+        // this.pot += this.bigBlind + this.bigBlind / 2;
+        // this.currentBet = this.bigBlind;
     }
     
     nextTurn(){
@@ -82,14 +86,23 @@ export class Game{
         this.nextTurn();
     }
     nextHand(){
+        //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
+        let newDealerIndex = 0
+        let currentIndex = 0
+        while(currentIndex <= this.dealer){
+            if(this.players[currentIndex].chips > 0){
+                newDealerIndex++
+            }
+            currentIndex++
+        }
         this.players = this.players.filter(player => player.chips > 0);
-        // console.log('players after removal: ', this.players)
         for(let i = 0; i < this.players.length; i++){
             this.players[i].bet = 0;
             this.players[i].allIn = null;
             this.players[i].moneyInPot = 0;
         }
-        this.dealer = (this.dealer + 1) % this.players.length;
+        //user newdealerindex to set the new dealer
+        this.dealer = newDealerIndex % this.players.length;
         this.turn = (this.dealer + 3) % this.players.length;
         this.round = 0;
         this.pot = 0;
@@ -160,8 +173,6 @@ export class Game{
             this.players[this.turn].bet += amount;
         }
 
-        
-        console.log('pot at end of bet for player 1: ', this.pot)
         this.nextTurn();    
     }
     fold(){
@@ -270,9 +281,9 @@ export class Game{
                 //     //if all in
                 // }         
             }
-            // else{
-            //     this.nextHand();
-            // }
+            else{
+                this.nextHand();
+            }
         }
         
     }
