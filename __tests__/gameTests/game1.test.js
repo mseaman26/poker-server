@@ -170,6 +170,9 @@ describe.skip('Game', () => {
 
         game.handleNumericalHands()
         //hand 2 round 0 dealer 1
+
+        //next hand
+        game.nextHand()
         betSum = 0
         chipsSum = 0
         expect(game.players.length).toBe(3)

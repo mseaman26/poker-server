@@ -53,6 +53,7 @@ export class Game{
     }
 
     nextTurn(){
+        console.log('next turn from ', this.turn, ' to ', (this.turn + 1) % this.players.length)
         if(this.allInCount + this.foldedCount === this.players.length){
             console.log('show cards')
             this.handleNumericalHands();
@@ -126,6 +127,7 @@ export class Game{
         this.nextTurn();
     }
     nextHand(){
+        console.log('next hand')
         //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
         let newDealerIndex = 0
         let currentIndex = 0
@@ -141,17 +143,15 @@ export class Game{
             this.players[i].allIn = null;
             this.players[i].moneyInPot = 0;
             this.players[i].maxWin = null;
+            this.players[i].folded = false;
         }
         //user newdealerindex to set the new dealer
         this.dealer = newDealerIndex % this.players.length;
         this.turn = (this.dealer + 1) % this.players.length;
         this.round = 0;
         this.pot = 0;
+        console.log('new round: ', this.round)
         this.currentBet = 0;
-        for(let i = 0; i < this.players.length; i++){
-            this.players[i].bet = 0;
-            this.players[i].folded = false;
-        }
         this.foldedCount = 0;
         this.allInCount = 0;
         this.bet(this.bigBlind / 2);
@@ -167,9 +167,12 @@ export class Game{
         if(this.betIndex === null){
             this.betIndex = this.turn;
         }
-        if((amount + this.players[this.turn].bet >= this.currentBet)){
+        if((amount < this.players[this.turn].chips)){
             this.currentBet = amount + this.players[this.turn].bet;
             // this.players[this.turn].allIn = amount + this.players[this.turn].bet;
+        }
+        else{
+            this.currentBet = this.players[this.turn].chips;  
         }
         this.pot += Math.min(amount, this.players[this.turn].chips);
         if(this.players[this.turn].chips <= amount){
@@ -200,6 +203,7 @@ export class Game{
         this.nextHand();
     }
     handleNumericalHands(){
+        console.log('handling numerical hands', this.players)
         //TODO: the filtering of folded players is causing problems
         for(let i = 0; i < this.players.length; i++){
             if(this.players[i].folded === true){
@@ -281,7 +285,8 @@ export class Game{
                         if(this.pot - carryOver === 0){
                             this.carryOver = carryOver;
                             this.pot = 0;
-                            this.nextHand();
+                            console.log('ready to call nexhand because pot - carryOver === 0')
+                            // this.nextHand();
                             return
                         }
                         splitDenom--
@@ -303,8 +308,8 @@ export class Game{
                 // }         
             }
             else{
-                console.log('initiated nexhand')
-                this.nextHand();
+                console.log('ready to call nexhand')
+                // this.nextHand();
                 return
             }
         }
