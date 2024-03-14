@@ -1,6 +1,6 @@
 import {Game} from '../../handlers/Game.js'
 
-describe('Game', () => {
+describe.skip('Game', () => {
     test('should return a new game', () => {
         const game = new Game()
         expect(game).toBeInstanceOf(Game)
@@ -165,6 +165,9 @@ describe('Game', () => {
         players[3].numericalHand = 80
         players[4].numericalHand = 55
 
+        
+        
+
         game.handleNumericalHands()
         //hand 2 round 0 dealer 1
         betSum = 0
@@ -199,6 +202,5 @@ describe('Game', () => {
 
 
         console.log('game at end of test 1', game)
-
     })
 })

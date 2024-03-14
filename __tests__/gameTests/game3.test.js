@@ -61,6 +61,8 @@ describe.skip('Game', () => {
         ]
         const game = new Game(1, players, 0, 100, 1000)
         game.startGame()
+        expect(game.totalChips).toBe(5000)   
+        expect(game.turn).toBe(3)
         game.bet(100)
         game.bet(100)
         game.bet(100)
@@ -121,19 +123,21 @@ describe.skip('Game', () => {
         game.bet(0)//  2
         game.bet(80)//  3
         game.bet(80)//  4
-        game.bet(80)//  0
-        console.log('money in pot after betting 80 ',game.players[0].moneyInPot)
+        game.bet(80)//  0 D
         game.bet(80)//  1
         expect(game.players[0].bet).toBe(5)
         expect(game.players[0].moneyInPot).toBe(5)
+        expect(game.players[1].bet).toBe(66)
         game.bet(80)//  2
-
+        //pot square
+        expect(game.players[2].moneyInPot).toBe(80)
+        //round 2
         expect(game.players[0].chips).toBe(0)
         expect(game.players[1].chips).toBe(0)
         expect(game.players[2].chips).toBe(180)
         expect(game.players[0].chips).toBe(0)
         expect(game.players[0].chips).toBe(0)
-
+        expect(game.pot).toBe(270)
         //checking numbers
         betSum = 0
         chipsSum = 0
@@ -143,6 +147,8 @@ describe.skip('Game', () => {
         for(let i = 0; i < game.players.length; i++){
             chipsSum += players[i].chips
         }
+     
+        expect(betSum).toBe(0)
         expect(chipsSum).toBe(180)
         expect(game.pot).toBe(270)
 
@@ -160,9 +166,19 @@ describe.skip('Game', () => {
 
         game.handleNumericalHands()
 
+        //hand 2 round 0 dealer 1
+        expect(game.players.length).toBe(4)
+        expect(game.round).toBe(0)
+        expect(game.dealer).toBe(1)
+        expect(game.turn).toBe(0)
+
+        // console.log('players after handle numerical hands: ', game.players)
+
         expect(game.players[0].chips).toBe(8)
-        expect(game.players[4].chips).toBe(80)
-        expect(game.players[1].chips).toBe(182)
+        expect(game.players[1].chips).toBe(182) // D
+        expect(game.players[2].chips).toBe(130)  // small blind - 50
+        expect(game.players[3].chips).toBe(0)  // big blind - 80 (cant cover)
+        
 
        
 
@@ -175,7 +191,10 @@ describe.skip('Game', () => {
         for(let i = 0; i < game.players.length; i++){
             chipsSum += players[i].chips
         }
-        expect(betSum + chipsSum + game.pot).toBe(450)
+        console.log('bet sum: ', betSum)
+        console.log('chips sum: ', chipsSum)
+        console.log('pot: ', game.pot)
+        expect(chipsSum + game.pot).toBe(450)
         
     })
 })
