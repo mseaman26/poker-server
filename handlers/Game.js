@@ -22,6 +22,7 @@ export class Game{
         this.deck = new Deck();
         this.totalChips = 0;
         this.maxBet = this.buyIn;
+        this.hand = 0
         
     }
     
@@ -29,7 +30,7 @@ export class Game{
         for(let i = 0; i < this.players.length; i++){
             this.totalChips += this.buyIn;
         }
-        this.setMaxBet();
+        
         this.active = true;
         for(let i = 0; i < this.players.length; i++){
             this.players[i].chips = this.buyIn;
@@ -40,7 +41,7 @@ export class Game{
             this.players[i].moneyInPot = 0;
             this.players[i].numericalHand = null;
         }
-
+        this.setMaxBet();
         this.bet(this.bigBlind / 2);
         this.bet(this.bigBlind);
         this.betIndex = null;
@@ -51,7 +52,6 @@ export class Game{
         // this.pot += this.bigBlind + this.bigBlind / 2;
         // this.currentBet = this.bigBlind;
     }
-
     nextTurn(){
         console.log('next turn from ', this.turn, ' to ', (this.turn + 1) % this.players.length)
         if(this.allInCount + this.foldedCount === this.players.length){
@@ -66,6 +66,7 @@ export class Game{
         }
         this.turn = (this.turn + 1) % this.players.length;
         if(this.turn === this.betIndex){
+            console.log('back to betIndex, players: ', this.players)
             for(let i = 0; i < this.players.length; i++){
                 if(this.players[i].allIn !== null){
                     let newMax = 0
@@ -76,6 +77,7 @@ export class Game{
                     this.players[i].maxWin = newMax;
                 }
             }
+            console.log('calling nextRound')
             this.nextRound();
             return
         }
@@ -89,6 +91,7 @@ export class Game{
         
     }
     setMaxBet(){
+        console.log('setting max bet, with these players: ', this.players)
         if(this.allInCount + this.foldedCount === this.players.length - 1){
             console.log('show cards')
             this.handleNumericalHands();
@@ -102,12 +105,17 @@ export class Game{
         let secondHighest = 0;
         let highest = 0;
         for(let i = 0; i < this.players.length; i++){
+            if(i===1){
+                console.log('player ',i,", ", this.players[i])
+            }
             if(this.players[i].folded === false){
                 if(this.players[i].chips > highest){
+                    console.log('new highest: player ',i,", ", this.players[i].chips)
                     secondHighest = highest;
                     highest = this.players[i].chips;
                 }
                 else if(this.players[i].chips > secondHighest){
+                    console.log('new second highest: player ',i,", ", this.players[i].chips)
                     secondHighest = this.players[i].chips;
                 }
             }
@@ -128,6 +136,8 @@ export class Game{
     }
     nextHand(){
         console.log('next hand')
+        this.hand += 1;
+        console.log('hand number: ', this.hand)
         //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
         let newDealerIndex = 0
         let currentIndex = 0
@@ -151,13 +161,37 @@ export class Game{
         this.round = 0;
         this.pot = 0;
         console.log('new round: ', this.round)
+        if(this.players.length === 1){
+            console.log('game over')
+            this.active = false;
+            return
+        }
         this.currentBet = 0;
         this.foldedCount = 0;
         this.allInCount = 0;
+        this.setMaxBet();
         this.bet(this.bigBlind / 2);
+        console.log('current bet after small blind: ', this.currentBet)
         this.bet(this.bigBlind);
+        console.log('current bet after big blind: ', this.currentBet)
 
         this.betIndex = null;
+    }
+    checktotals(){
+        let moneyInPotSum = 0
+        let chipsSum = 0
+        for(let i = 0; i < this.players.length; i++){
+            moneyInPotSum += this.players[i].moneyInPot
+        }
+        for(let i = 0; i < this.players.length; i++){
+            chipsSum += this.players[i].chips
+        }
+        console.log('moneyInPotSum: ', moneyInPotSum)
+        console.log('chipsSum: ', chipsSum)
+        if(chipsSum + moneyInPotSum === this.totalChips && this.pot + chipsSum === this.totalChips){
+            return true
+        }return false
+
     }
     bet(amount){
 
@@ -167,13 +201,15 @@ export class Game{
         if(this.betIndex === null){
             this.betIndex = this.turn;
         }
-        if((amount < this.players[this.turn].chips)){
+        // if((amount <= this.players[this.turn].chips)){
             this.currentBet = amount + this.players[this.turn].bet;
             // this.players[this.turn].allIn = amount + this.players[this.turn].bet;
-        }
-        else{
-            this.currentBet = this.players[this.turn].chips;  
-        }
+        // }
+        // else{
+            
+            // this.currentBet = Math.min(this.players[this.turn].chips, this.currentBet); 
+            // this.currentBet = this.players[this.turn].chips + this.players[this.turn].bet; 
+        // }
         this.pot += Math.min(amount, this.players[this.turn].chips);
         if(this.players[this.turn].chips <= amount){
             console.log(this.turn, ' is all in, covering ', this.players[this.turn].chips, ' of the ', this.currentBet, ' bet.')
