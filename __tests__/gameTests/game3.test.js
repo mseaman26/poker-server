@@ -1,7 +1,7 @@
 import {Game} from '../../handlers/Game.js'
 
 
-describe.skip('Game', () => {
+describe('Game', () => {
 
     test('should return expected chip values after some betting', () => {
         const

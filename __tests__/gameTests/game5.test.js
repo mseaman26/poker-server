@@ -101,6 +101,7 @@ describe('Game', () => {
         expect(game.currentBet).toBe(271)
         game.bet(271) //2
         expect(game.betIndex).toBe(1)
+
         expect(game.currentBet).toBe(271)
         expect(game.round).toBe(0)
         expect(game.turn).toBe(3)
@@ -109,6 +110,7 @@ describe('Game', () => {
         expect(game.players[2].bet).toBe(27)
         expect(game.currentBet).toBe(271)
         game.fold() //3
+
         game.fold() //4
         expect(game.foldedCount).toBe(2)
         expect(game.pot).toBe(298)

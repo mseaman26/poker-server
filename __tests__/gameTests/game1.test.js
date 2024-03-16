@@ -1,6 +1,6 @@
 import {Game} from '../../handlers/Game.js'
 
-describe.skip('Game', () => {
+describe('Game', () => {
     test('should return a new game', () => {
         const game = new Game()
         expect(game).toBeInstanceOf(Game)

@@ -23,7 +23,7 @@ export class Game{
         this.totalChips = 0;
         this.maxBet = this.buyIn;
         this.hand = 0
-        
+        this.flop = []
     }
     
     startGame(){
@@ -42,16 +42,12 @@ export class Game{
             this.players[i].numericalHand = null;
         }
         this.setMaxBet();
-        this.bet(this.bigBlind / 2);
-        this.bet(this.bigBlind);
+        this.bet(Math.floor(this.bigBlind / 2));
+        this.bet(Math.floor(this.bigBlind));
         this.betIndex = null;
-        // this.players[(this.dealer + 1) % this.players.length].chips -= this.bigBlind / 2;
-        // this.players[(this.dealer + 1) % this.players.length].bet = this.bigBlind / 2;
-        // this.players[(this.dealer + 2) % this.players.length].chips -= this.bigBlind;
-        // this.players[(this.dealer + 2) % this.players.length].bet = this.bigBlind;
-        // this.pot += this.bigBlind + this.bigBlind / 2;
-        // this.currentBet = this.bigBlind;
+        this.deck.dealPockets(this.players);
     }
+
     nextTurn(){
         console.log('next turn from ', this.turn, ' to ', (this.turn + 1) % this.players.length)
         if(this.allInCount + this.foldedCount === this.players.length){
@@ -66,7 +62,6 @@ export class Game{
         }
         this.turn = (this.turn + 1) % this.players.length;
         if(this.turn === this.betIndex){
-            console.log('back to betIndex, players: ', this.players)
             for(let i = 0; i < this.players.length; i++){
                 if(this.players[i].allIn !== null){
                     let newMax = 0
@@ -123,6 +118,19 @@ export class Game{
         this.maxBet = secondHighest;
     }
     nextRound(){
+        if(this.round === 0){
+            this.flop = this.deck.dealFlop();
+        }
+        else if(this.round === 1){
+            this.flop.push(this.deck.dealCard());
+        }
+        else if(this.round === 2){
+            this.flop.push(this.deck.dealCard());
+        }
+        else{
+            this.handleNumericalHands();
+            return
+        }
         this.setMaxBet();
         this.round += 1;
         this.currentBet = 0;
@@ -170,7 +178,7 @@ export class Game{
         this.foldedCount = 0;
         this.allInCount = 0;
         this.setMaxBet();
-        this.bet(this.bigBlind / 2);
+        this.bet(Math.floor(this.bigBlind / 2));
         console.log('current bet after small blind: ', this.currentBet)
         this.bet(this.bigBlind);
         console.log('current bet after big blind: ', this.currentBet)
@@ -202,7 +210,7 @@ export class Game{
             this.betIndex = this.turn;
         }
         // if((amount <= this.players[this.turn].chips)){
-            this.currentBet = amount + this.players[this.turn].bet;
+            this.currentBet = Math.max(amount + this.players[this.turn].bet, this.currentBet);
             // this.players[this.turn].allIn = amount + this.players[this.turn].bet;
         // }
         // else{

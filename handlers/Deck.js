@@ -2,7 +2,7 @@ export class Deck{
     constructor(){
         this.deck = [];
         this.suits = ['hearts', 'diamonds', 'clubs', 'spades'];
-        this.values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        this.values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
         this.createDeck();
     }
         createDeck(){
@@ -20,5 +20,13 @@ export class Deck{
         }
         dealCard(){
             return this.deck.pop();
+        }
+        dealPockets(players){
+            for(let i = 0; i < players.length; i++){
+                players[i].pocket = [this.dealCard(), this.dealCard()];
+            }
+        }
+        dealFlop(){
+            return [this.dealCard(), this.dealCard(), this.dealCard()];
         }
 }
