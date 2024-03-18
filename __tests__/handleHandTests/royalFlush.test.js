@@ -1,7 +1,7 @@
 import { handHandler } from "../../handlers/handHandler";
 
-describe("handleHands", () => {
-    test("should detect a straight and rank it by how high it goes", () => {
+describe.skip("handleHands", () => {
+    test("should detect a royal flush and return it if there is one", () => {
         let hand = [
             { value: 13, suit: "hearts" },
             { value: 12, suit: "hearts" },

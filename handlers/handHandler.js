@@ -37,7 +37,7 @@ export class handHandler  {
             return false;
         }
         //if there are straight flushes return them
-        return straightFlushes
+        return straightFlushes[straightFlushes.length - 1]
     }
     FiveCardHandIsFlush(fiveCardHand) {
         let suits = fiveCardHand.map(card => card.suit);
@@ -48,13 +48,91 @@ export class handHandler  {
         return false;
     }
     hasFourOfAKind() {
+        let obj = {}
+        for(let i = 0; i < this.hand.length; i++){
+            if(obj[this.hand[i].value]){
+                obj[this.hand[i].value]++
+            } else {
+                obj[this.hand[i].value] = 1
+            }
+        }
+        if(!Object.values(obj).includes(4)){
+            return false
+        }
+        //get the value of the card that has 4 of a kind
+        let fiveCardHand = []
+        let value = parseInt(Object.keys(obj).find(key => obj[key] === 4));
+        let kickerValue = 0
+        let kicker
+        
+        for(let i = 0; i < this.hand.length; i++){
+            if(this.hand[i].value !== value){
+                if(this.hand[i].value > kickerValue){
+                    kickerValue = this.hand[i].value
+                    kicker = this.hand[i]
+                }
+            }
+        }
+        for(let i = 0; i < this.hand.length; i++){
+            if(this.hand[i].value == value){
+                fiveCardHand.push(this.hand[i])
+            }
+        }
+        fiveCardHand.push(kicker)
+        return fiveCardHand
+        
+
 
     }
     hasFullHouse()  {
-
+        let sortedHand = this.hand.sort((a, b) =>b.value - a.value);
+        let finalHand = []
+        let hasThreeOfAKind = false
+        let hasPair = false
+        for(let i = 0; i < sortedHand.length - 2; i++){
+            if(sortedHand[i].value === sortedHand[i + 1].value && sortedHand[i].value === sortedHand[i + 2].value){
+                //remove the three of a kind from the hand and add it to the final hand
+                finalHand.push(...sortedHand.splice(i, 3))
+                hasThreeOfAKind = true
+                break;
+            }
+        }
+        if(!hasThreeOfAKind){
+            return false
+        }
+        for(let i = 0; i < sortedHand.length - 1; i++){
+            if(sortedHand[i].value === sortedHand[i + 1].value){
+                //remove the pair from the hand and add it to the final hand
+                finalHand.push(...sortedHand.splice(i, 2))
+                hasPair = true
+                break;
+            }
+        }
+        if(!hasPair){
+            return false
+        }
+        return finalHand
     }
     hasFlushes() {
-
+        let obj = {}
+        let flushSuit = ""
+        for(let i = 0; i < this.hand.length; i++){
+            if(obj[this.hand[i].suit]){
+                if(obj[this.hand[i].suit] >= 4){
+                    flushSuit = this.hand[i].suit
+                    break
+                }
+                obj[this.hand[i].suit]++
+            } else {
+                obj[this.hand[i].suit] = 1
+            }
+        }
+        if(flushSuit === ""){
+            return false
+        }
+        let sortedSuitCards = this.hand.filter(card => card.suit === flushSuit).sort((a, b) => b.value - a.value)
+        return sortedSuitCards.slice(0, 5)
+        
     }
     hasStraights() {
         let sortedHand = this.hand.sort((a, b) => a.value - b.value);
@@ -83,7 +161,23 @@ export class handHandler  {
         return straights
     }
     hasThreeOfAKind() {
-
+        let sortedHand = this.hand.sort((a, b) =>b.value - a.value);
+        let finalHand = []
+        let hasThreeOfAKind = false
+        for(let i = 0; i < sortedHand.length - 2; i++){
+            if(sortedHand[i].value === sortedHand[i + 1].value && sortedHand[i].value === sortedHand[i + 2].value){
+                //remove the three of a kind from the hand and add it to the final hand
+                finalHand.push(...sortedHand.splice(i, 3))
+                hasThreeOfAKind = true
+                break;
+            }
+        }
+        if(!hasThreeOfAKind){
+            return false
+        }
+        finalHand.push(sortedHand[0])
+        finalHand.push(sortedHand[1])
+        return finalHand
     }
     hasTwoPair(){
 
