@@ -1,4 +1,4 @@
-import { handHandler } from "../../handlers/handHandler";
+import { HandHandler } from "../../handlers/handHandler";
 
 describe("handleHands", () => {
     test("should detect four of a kind and return it with the best kicker", () => {
@@ -11,7 +11,7 @@ describe("handleHands", () => {
             { value: 14, suit: "spades" },
             { value: 8, suit: "hearts" },
         ];
-        let currentHandHandler = new handHandler(hand);
+        let currentHandHandler = new HandHandler(hand);
         let result = currentHandHandler.hasFourOfAKind();
         expect(result).toEqual([
             { value: 13, suit: 'clubs' },

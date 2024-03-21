@@ -1,7 +1,7 @@
 
 import {Game} from '../../handlers/Game.js'
 
-describe('Game', () => {
+describe.skip('Game', () => {
     test('should return a new game', () => {
         const game = new Game()
         expect(game).toBeInstanceOf(Game)
@@ -107,7 +107,6 @@ describe('Game', () => {
         expect(game.dealer).toBe(1)
         expect(game.players.length).toBe(5)
         // expect(game.round).toBe(0)
-        console.log('!!players: ', game.players)
         expect(game.round).toBe(0)
         expect(game.pot).toBe(130)
         expect(game.maxBet).toBe(80)

@@ -1,4 +1,4 @@
-export class handHandler  {
+export class HandHandler  {
     constructor(hand) {
         this.hand = hand;
     }
@@ -17,7 +17,7 @@ export class handHandler  {
             return false;
         }
         //if all the above conditions are met return the highest straight, which is a royal flush
-        return this.hasStraights()[this.hasStraights().length - 1]
+        return this.hasStraights()[this.hasStraights().length - 1].reverse()
 
     }
     hasStraightFlushes() {
@@ -85,7 +85,8 @@ export class handHandler  {
 
     }
     hasFullHouse()  {
-        let sortedHand = this.hand.sort((a, b) =>b.value - a.value);
+        let handToSort = this.hand.map(card => card)
+        let sortedHand = handToSort.sort((a, b) =>b.value - a.value);
         let finalHand = []
         let hasThreeOfAKind = false
         let hasPair = false
@@ -157,11 +158,11 @@ export class handHandler  {
                 straights.push(currentStraight)
             }
         }
-
         return straights
     }
     hasThreeOfAKind() {
-        let sortedHand = this.hand.sort((a, b) =>b.value - a.value);
+        let handToSort = this.hand.map(card => card)
+        let sortedHand = handToSort.sort((a, b) =>b.value - a.value);
         let finalHand = []
         let hasThreeOfAKind = false
         for(let i = 0; i < sortedHand.length - 2; i++){
@@ -180,12 +181,150 @@ export class handHandler  {
         return finalHand
     }
     hasTwoPair(){
-
+        let handToSort = this.hand.map(card => card)
+        let sortedHand = handToSort.sort((a, b) =>b.value - a.value);
+        let finalHand = []
+        for(let i = 0; i < sortedHand.length - 1; i++){
+            if(sortedHand[i].value === sortedHand[i + 1].value){
+                finalHand.push(...sortedHand.splice(i, 2))
+                break
+            }
+        }
+        for(let i = 0; i < sortedHand.length - 1; i++){
+            if(sortedHand[i].value === sortedHand[i + 1].value){
+                finalHand.push(...sortedHand.splice(i, 2))
+                break
+            }
+        }
+        if(finalHand.length < 4){
+            return false
+        }
+        finalHand.push(sortedHand[0])
+        
+        return finalHand
     }
     hasOnePair() {
-
+        let handToSort = this.hand.map(card => card)
+        let sortedHand = handToSort.sort((a, b) =>b.value - a.value);
+        let finalHand = []
+        for(let i = 0; i < sortedHand.length - 1; i++){
+            if(sortedHand[i].value === sortedHand[i + 1].value){
+                finalHand.push(...sortedHand.splice(i, 2))
+                break
+            }
+        }
+        if(finalHand.length < 2){
+            return false
+        }
+        finalHand.push(sortedHand[0])
+        finalHand.push(sortedHand[1])
+        finalHand.push(sortedHand[2])
+        return finalHand
     }
     highCard() {
-
+        let sortedHand = this.hand.sort((a, b) =>b.value - a.value);
+        return sortedHand.slice(0, 5)
     }
+    //converting hands to rankable objects
+    findHand() {
+        // let startingHand = this.hand.map(card => card)
+        if(this.hasRoyalFlush()){
+            const actualHand = this.hasRoyalFlush()
+            const rankedHand = {
+                hand: actualHand,
+                rank: [9],
+                title: 'royal flush'
+            }
+            return rankedHand
+        }
+        // this.hand = startingHand.map(card => card)
+        if(this.hasStraightFlushes()){
+            const actualHand = this.hasStraightFlushes()
+            const rankedHand = {
+                hand: actualHand,
+                rank: [8, actualHand[4].value],
+                title: 'straight flush'
+            }
+            return rankedHand
+        }
+        // this.hand = startingHand.map(card => card)
+        if(this.hasFourOfAKind()){
+            // this.hand = startingHand.map(card => card)
+            const actualHand = this.hasFourOfAKind()
+            const rankedHand = {
+                hand: actualHand,
+                rank: [7, actualHand[0].value,  actualHand[4].value],
+                title: 'four of a kind'
+            }
+            return rankedHand
+        }
+        // this.hand = startingHand.map(card => card)
+        if(this.hasFullHouse()){
+            // this.hand = startingHand.map(card => card)
+            const actualHand = this.hasFullHouse()
+            const rankedHand = {
+                hand: actualHand,
+                rank: [6, actualHand[0].value, actualHand[4].value],
+                title: 'full house'
+            }
+            return rankedHand
+        }
+        // this.hand = startingHand.map(card => card)
+        if(this.hasFlushes()){
+            const actualHand = this.hasFlushes()
+            const rankedHand = {
+                hand: actualHand,
+                rank: [5, actualHand[0].value, actualHand[1].value, actualHand[2].value, actualHand[3].value, actualHand[4].value],
+                title: 'flush'
+            }
+            return rankedHand
+        }
+        // this.hand = startingHand.map(card => card)
+        if(this.hasStraights().length > 0){
+            const actualHand = this.hasStraights()[this.hasStraights().length - 1]
+            const rankedHand = {
+                hand: actualHand,
+                rank: [4, actualHand[4].value],
+                title: 'straight'
+            }
+            return rankedHand
+        }
+        // this.hand = startingHand.map(card => card)
+        if(this.hasThreeOfAKind()){
+            const actualHand = this.hasThreeOfAKind()
+            const rankedHand = {
+                hand: actualHand,
+                rank: [3, actualHand[0].value, actualHand[3].value, actualHand[4].value],
+                title: 'three of a kind'
+            }
+            return rankedHand
+        }
+        // this.hand = startingHand.map(card => card)
+        if(this.hasTwoPair()){
+            const actualHand = this.hasTwoPair()
+            const rankedHand = {
+                hand: actualHand,
+                rank: [2, actualHand[0].value, actualHand[2].value, actualHand[4].value],
+                title: 'two pair'
+            }
+            return rankedHand
+        }
+        // this.hand = startingHand.map(card => card)
+        if(this.hasOnePair()){
+            const actualHand = this.hasOnePair()
+            const rankedHand = {
+                hand: actualHand,
+                rank: [1, actualHand[0].value, actualHand[2].value, actualHand[3].value, actualHand[4].value],
+                title: 'one pair'
+            }
+            return rankedHand
+        }
+        // this.hand = startingHand.map(card => card)
+        return {
+            hand: this.highCard(),
+            rank: [0, this.highCard()[0].value, this.highCard()[1].value, this.highCard()[2].value, this.highCard()[3].value, this.highCard()[4].value],
+            title: 'high card'
+        }
+    }
+    
 }

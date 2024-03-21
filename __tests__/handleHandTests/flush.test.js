@@ -1,4 +1,4 @@
-import { handHandler } from "../../handlers/handHandler";
+import { HandHandler } from "../../handlers/handHandler";
 
 describe("handleHands", () => {
     test("should detect any flushes and return the best one", () => {
@@ -11,9 +11,8 @@ describe("handleHands", () => {
             { value: 14, suit: "spades" },
             { value: 8, suit: "hearts" },
         ];
-        let currentHandHandler = new handHandler(hand);
+        let currentHandHandler = new HandHandler(hand);
         let result = currentHandHandler.hasFlushes();
-        console.log(result)
         expect(result).toEqual([
             { value: 13, suit: 'hearts' },
             { value: 12, suit: 'hearts' },
@@ -23,7 +22,7 @@ describe("handleHands", () => {
         ]);
         hand = [
             { value: 5, suit: "hearts" },
-            { value: 13, suit: "hearts" },
+            { value: 14, suit: "hearts" },
             { value: 8, suit: "hearts" },
             { value: 7, suit: "spades" },
             { value: 13, suit: "hearts" },
@@ -33,9 +32,8 @@ describe("handleHands", () => {
         ];
         currentHandHandler.hand = hand;
         result = currentHandHandler.hasFlushes();
-        console.log(result)
         expect(result).toEqual([
-            { value: 13, suit: "hearts" },
+            { value: 14, suit: "hearts" },
             { value: 13, suit: "hearts" },
             { value: 12, suit: "hearts" },
             { value: 9, suit: "hearts" },
@@ -52,7 +50,6 @@ describe("handleHands", () => {
         ];
         currentHandHandler.hand = hand;
         result = currentHandHandler.hasFlushes();
-        console.log(result)
         expect(result).toEqual([
             { value: 14, suit: "clubs" },
             { value: 13, suit: "clubs" },
@@ -71,7 +68,6 @@ describe("handleHands", () => {
         ];
         currentHandHandler.hand = hand;
         result = currentHandHandler.hasFlushes();
-        console.log(result)
         expect(result).toEqual(false);
     })
 })

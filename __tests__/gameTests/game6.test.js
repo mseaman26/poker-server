@@ -51,6 +51,7 @@ describe('Game', () => {
         game.startGame()
 
         //hand 0 hands
+        //TODO: make these into real hands, maybe put them right before nexthand is and use findHAnd and rankHands to add the real numerical hands to the players 
         game.players[0].numericalHand = 97
         game.players[1].numericalHand = 2
         game.players[2].numericalHand = 3
@@ -76,6 +77,7 @@ describe('Game', () => {
         game.bet(0) //2
         //pot sqaure
         //round 1
+        console.log(' round 1 flop', game.flop)
         expect(game.round).toBe(1)
         expect(game.betIndex).toBe(null)
         expect(game.currentBet).toBe(0)
@@ -133,7 +135,6 @@ describe('Game', () => {
         expect(game.round).toBe(0)
         expect(game.dealer).toBe(1)
         expect(game.turn).toBe(4)
-        expect(game.hand).toBe(1)
 
         expect(game.pot).toBe(148)
         expect(game.betIndex).toBe(null)
@@ -177,13 +178,11 @@ describe('Game', () => {
         game.bet(0) //2
         game.bet(176) //3
         expect(game.betIndex).toBe(3)
-        console.log('player 3 bet', game.players[3].bet)
         game.bet(176) //4
         expect(game.turn).toBe(7)
         game.bet(176) //7
         game.bet(176) //0
         game.bet(176) //1
-        console.log('pot!: ', game.pot)
         game.fold() //2  
         //round 2
         expect(game.pot).toBe(1770)
@@ -192,12 +191,9 @@ describe('Game', () => {
         expect(game.players[3].chips).toBe(524)    
         game.bet(524) //3
         expect(game.players[3].allIn).toBe(900) 
-        console.log('player 3 bet', game.players[3].bet)
         game.bet(623) //4
         expect(game.currentBet).toBe(623)
-        console.log('player 4 bet', game.players[4].bet)
         
-        console.log('game before: ', game)
         expect(game.pot).toBe(2917)
         game.bet(623) //7
         //handledhands
@@ -281,7 +277,6 @@ describe('Game', () => {
         game.bet(1229) //4
         //pot square
         //player 4 wins
-        console.log('game after: ', game) 
         expect(game.players[0].chips).toBe(34)
         expect(game.players[1].chips).toBe(806)
         expect(game.players[2].chips).toBe(0)

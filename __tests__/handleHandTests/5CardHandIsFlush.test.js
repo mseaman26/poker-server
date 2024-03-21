@@ -1,4 +1,4 @@
-import { handHandler } from "../../handlers/handHandler";
+import { HandHandler } from "../../handlers/handHandler";
 
 describe("handleHands", () => {
     test("should detect a straight and rank it by how high it goes", () => {
@@ -11,7 +11,7 @@ describe("handleHands", () => {
             { value: 14, suit: "spades" },
             { value: 8, suit: "clubs" },
         ];
-        let currentHandHandler = new handHandler(hand);
+        let currentHandHandler = new HandHandler(hand);
         let fiveCardHand = [
             { value: 13, suit: "hearts" },
             { value: 12, suit: "clubs" },
