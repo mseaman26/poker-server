@@ -195,6 +195,14 @@ describe('Game', () => {
         expect(game.currentBet).toBe(623)
         
         expect(game.pot).toBe(2917)
+        game.players[0].numericalHand = 4
+        game.players[1].numericalHand = 15
+        game.players[2].numericalHand = 6
+        game.players[3].numericalHand = 80
+        game.players[4].numericalHand = 934
+        game.players[5].numericalHand = 25
+        game.players[6].numericalHand = 92
+        game.players[7].numericalHand = 33
         game.bet(623) //7
         //handledhands
         //player 4 wins

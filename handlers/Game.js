@@ -118,8 +118,10 @@ export class Game{
         this.maxBet = secondHighest;
     }
     nextRound(){
+        console.log('callin nextRound')
         if(this.round === 0){
             this.flop = this.deck.dealFlop();
+            console.log('flop in nextround: ', this.flop)
         }
         else if(this.round === 1){
             this.flop.push(this.deck.dealCard());
@@ -145,6 +147,10 @@ export class Game{
     }
     nextHand(){
         //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
+        this.deck.createDeck();
+        this.deck.shuffleDeck();
+        this.deck.shuffleDeck();
+        this.deck.shuffleDeck();
         let newDealerIndex = 0
         let currentIndex = 0
         while(currentIndex <= this.dealer){
@@ -178,6 +184,7 @@ export class Game{
         this.bet(this.bigBlind);
 
         this.betIndex = null;
+        this.deck.dealPockets(this.players);
     }
     checktotals(){
         let moneyInPotSum = 0
@@ -345,6 +352,65 @@ export class Game{
             }
         }
         
+    }
+    startGameNoShuffle(){
+
+        for(let i = 0; i < this.players.length; i++){
+            this.totalChips += this.buyIn;
+        }
+        
+        this.active = true;
+        for(let i = 0; i < this.players.length; i++){
+            this.players[i].chips = this.buyIn;
+            this.players[i].allIn = null;
+            this.players[i].bet = 0;
+            this.players[i].maxWin = null;
+            this.players[i].folded = false;
+            this.players[i].moneyInPot = 0;
+            this.players[i].numericalHand = null;
+        }
+        this.setMaxBet();
+        this.bet(Math.floor(this.bigBlind / 2));
+        this.bet(Math.floor(this.bigBlind));
+        this.betIndex = null;
+        this.deck.dealPockets(this.players);
+    }
+    nextHandNoShuffle(){
+        //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
+        let newDealerIndex = 0
+        let currentIndex = 0
+        while(currentIndex <= this.dealer){
+            if(this.players[currentIndex].chips > 0){
+                newDealerIndex++
+            }
+            currentIndex++
+        }
+        this.players = this.players.filter(player => player.chips > 0);
+        for(let i = 0; i < this.players.length; i++){
+            this.players[i].bet = 0;
+            this.players[i].allIn = null;
+            this.players[i].moneyInPot = 0;
+            this.players[i].maxWin = null;
+            this.players[i].folded = false;
+        }
+        //user newdealerindex to set the new dealer
+        this.dealer = newDealerIndex % this.players.length;
+        this.turn = (this.dealer + 1) % this.players.length;
+        this.round = 0;
+        this.pot = 0;
+        if(this.players.length === 1){
+            this.active = false;
+            return
+        }
+        this.currentBet = 0;
+        this.foldedCount = 0;
+        this.allInCount = 0;
+        this.setMaxBet();
+        this.bet(Math.floor(this.bigBlind / 2));
+        this.bet(this.bigBlind);
+
+        this.betIndex = null;
+        this.deck.dealPockets(this.players);
     }
 }
 
