@@ -293,16 +293,42 @@ export class Game{
         });
         
         handledHands.sort((a, b) => b[0].numericalHand - a[0].numericalHand);
-    
+        console.log('handledHands: ', handledHands) 
         
         //
         for(let i = 0; i < handledHands.length; i++){
             if(this.pot > 0){
-                let winningsTotal = 0;
                 let splitDenom = handledHands[i].length;
                 for(let j = 0; j < handledHands[i].length; j++){
                     //if current winner is not all in
                     if(this.players[handledHands[i][j].index].allIn === null){
+                        if(handledHands[i].length === 1){
+                            console.log('one winner')
+                            this.players[handledHands[i][j].index].chips += this.pot;
+                            this.pot = 0;
+                            return
+                        }else{
+                            console.log('splitting pot of ', this.pot)
+                            let denom = handledHands[i].length;
+                            console.log('denom: ', denom)
+                            console.log('pot: ', this.pot)
+                            for(let k = 0; k < handledHands[i].length; k++){
+                                console.log('player', handledHands[i][k].index, 'gets: ', Math.floor(this.pot / denom))
+                                this.players[handledHands[i][k].index].chips += Math.floor(this.pot / denom);
+                                // handledHands[i][k].chips += Math.floor(this.pot / denom);
+                                this.pot -= Math.floor(this.pot / denom);
+                                denom--
+                            }
+                            // let carryOver = this.pot % handledHands[i].length;
+                            // this.players[handledHands[i][j].index].chips += splitPot;
+                            // this.pot -= splitPot;
+                            // if(this.pot - carryOver === 0){
+                            //     this.carryOver = carryOver;
+                            //     this.pot = 0;
+                            //     // this.nextHand();
+                            //     return
+                            // }
+                        }
                         this.players[handledHands[i][j].index].chips += this.pot;
                         this.pot = 0;
                     }else{

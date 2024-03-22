@@ -115,7 +115,8 @@ describe("handleHands", () => {
         ]
         enumeratedHand = handHandler.findHand();
         hands.push(enumeratedHand)
-        let rankedHands = rankHands(hands);
+        let players = [{},{},{},{},{},{},{},{},{}]
+        let rankedHands = rankHands(hands, players);
 
         console.log('result',rankedHands)
 

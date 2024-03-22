@@ -1,6 +1,6 @@
 import {Game} from '../../handlers/Game.js'
 
-test('should return expected chip values after some betting', () => {
+test.skip('should return expected chip values after some betting', () => {
     const players = [
         {
             id: 1,

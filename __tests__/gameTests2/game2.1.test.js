@@ -1,6 +1,6 @@
 
 import {Game} from '../../handlers/Game.js'
-import { deck2_1, deck2_1_1 , deck2_1_2, deck2_1_3, deck2_1_4} from '../../handlers/fixedDecks.js'
+import { deck2_1, deck2_1_1 , deck2_1_2, deck2_1_3, deck2_1_4, deck2_1_5, deck2_1_6, deck2_1_7, deck2_1_8} from '../../handlers/fixedDecks.js'
 describe('Game', () => {
     test('should return a new game', () => {
         const game = new Game()
@@ -160,7 +160,7 @@ describe('Game', () => {
         expect(game.players[2].chips).toBe(1500)
         expect(game.players[3].chips).toBe(1500)
         expect(game.players[4].chips).toBe(1000)
-        game.deck.deck = deck2_1_2
+        game.deck.deck = [...deck2_1_2]
         //nexthand
         expect(game.deck.deck.length).toBe(52)
         //next hand
@@ -211,7 +211,7 @@ describe('Game', () => {
 
         //next hand
         
-        game.deck.deck = deck2_1_3
+        game.deck.deck = [...deck2_1_3]
         game.nextHandNoShuffle()
         expect(game.checktotals()).toBe(true)
         expect(game.turn).toBe(1)
@@ -242,7 +242,7 @@ describe('Game', () => {
         // console.log('deck: ', game.deck.deck)
         
         //next hand
-        game.deck.deck = deck2_1_4
+        game.deck.deck = [...deck2_1_4]
         expect(game.deck.deck.length).toBe(52)
         expect(game.players[0].chips).toBe(775)
         expect(game.players[1].chips).toBe(775)
@@ -269,14 +269,116 @@ describe('Game', () => {
         expect(game.players[2].chips).toBe(0)
         expect(game.pot).toBe(3725)
         game.bet(625) //3
-        
-        console.log('players: ', game.players)
         expect(game.round).toBe(3)
-        console.log('game flop: ', game.flop)
         expect(game.players[0].chips).toBe(0)
         expect(game.players[1].chips).toBe(1550)
         expect(game.players[2].chips).toBe(2800)
         expect(game.players[3].chips).toBe(650)
+        //next hand
+        game.deck.deck = [...deck2_1_5]
+        game.nextHandNoShuffle()
+        expect(game.checktotals()).toBe(true)
+        expect(game.players.length).toBe(3)
+        expect(game.dealer).toBe(0)
+        expect(game.players[1].chips).toBe(2750)
+        //round 0
+        expect(game.turn).toBe(0)
+        game.bet(641) //0
+        game.bet(591) //1
+        expect(game.round).toBe(0)
+        expect(game.pot).toBe(1382)
+        game.bet(541) //2
+        expect(game.round).toBe(1)
+        expect(game.turn).toBe(1)
+        //round 1
+        game.bet(0) //1
+        game.bet(0) //2
+        expect(game.round).toBe(1)
+        game.bet(0) //1
+        expect(game.round).toBe(2)
+        game.bet(0) //1
+        game.bet(0) //2
+        expect(game.round).toBe(2)
+        game.bet(0) //1
+        expect(game.round).toBe(3)
+        game.bet(0) //1
+        game.bet(0) //2
+        game.bet(0) //1
+        expect(game.round).toBe(3)
+        expect(game.players[0].chips).toBe(909)
+        expect(game.players[1].chips).toBe(4082)
+        expect(game.players[2].chips).toBe(9)
+
+        game.deck.deck = [...deck2_1_6]
+        //next hand
+        game.nextHandNoShuffle()
+        expect(game.checktotals()).toBe(true)
+        expect(game.players.length).toBe(3)
+        expect(game.dealer).toBe(1)
+        expect(game.players[0].chips).toBe(809)
+        expect(game.players[1].chips).toBe(4082)
+        expect(game.players[2].chips).toBe(0)
+        expect(game.turn).toBe(1)
+        expect(game.currentBet).toBe(100)
+        //round 0
+        game.bet(100) //1
+        expect(game.round).toBe(0)
+        game.bet(0) //0
+        expect(game.round).toBe(1)
+        expect(game.turn).toBe(0)
+        //round 1
+        game.bet(0) //0
+        expect(game.round).toBe(1)
+        game.bet(0) //1
+        //round 2
+        expect(game.round).toBe(2)
+        game.bet(0) //0
+        expect(game.round).toBe(2)
+        game.bet(0) //1
+        //round 3
+        expect(game.round).toBe(3)
+        game.bet(0) //0
+        expect(game.pot).toBe(209)
+        game.bet(0) //1
+        expect(game.pot).toBe(0)
+        expect(game.players[0].chips).toBe(809)
+        expect(game.players[1].chips).toBe(4191)
+        expect(game.players[2].chips).toBe(0)
+
+        game.deck.deck = [...deck2_1_8]
+        //next hand
+        game.nextHandNoShuffle()
+        expect(game.checktotals()).toBe(true)
+        expect(game.players.length).toBe(2)
+        expect(game.dealer).toBe(0)
+        expect(game.players[0].chips).toBe(709)
+        expect(game.players[1].chips).toBe(4141)
+        expect(game.turn).toBe(1)
+        //round 0
+        expect(game.round).toBe(0)
+        game.bet(750) //1
+        expect(game.round).toBe(0)
+        game.bet(700) //0
+        expect(game.round).toBe(1)
+        expect(game.turn).toBe(1)
+        //round 1
+        game.bet(0) //1
+        game.bet(0) //0
+        //round 2
+        game.bet(0) //1
+        expect(game.players[0].moneyInPot).toBe(800)
+        expect(game.players[1].moneyInPot).toBe(800)
+        game.bet(0) //0
+        //round 3
+        game.bet(0) //1
+        game.bet(0) //0
+        expect(game.players[0].chips).toBe(809)
+        expect(game.players[1].chips).toBe(4191)
+
+
+
+
+
         
 
 
