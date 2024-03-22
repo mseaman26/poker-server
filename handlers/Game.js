@@ -27,6 +27,7 @@ export class Game{
         this.hand = 0
         this.flop = []
         this.handHandler = new HandHandler();
+        this.isTest = false;
     }
     
     startGame(){
@@ -131,6 +132,11 @@ export class Game{
         }
         else{
             this.handleNumericalHands();
+            if(this.isTest){
+                this.nextHandNoShuffle();
+                return
+            }
+            this.nextHand();
             return
         }
        
@@ -185,6 +191,7 @@ export class Game{
 
         this.betIndex = null;
         this.deck.dealPockets(this.players);
+        console.log('players at end of nextHand: ', this.players)
     }
     checktotals(){
         let moneyInPotSum = 0
@@ -351,7 +358,11 @@ export class Game{
                         if(this.pot - carryOver === 0){
                             this.carryOver = carryOver;
                             this.pot = 0;
-                            // this.nextHand();
+                            if(this.isTest){
+                                // this.nextHandNoShuffle();
+                                return
+                            }
+                            this.nextHand();
                             return
                         }
                         splitDenom--
@@ -373,7 +384,11 @@ export class Game{
                 // }         
             }
             else{
-                // this.nextHand();
+                if(this.isTest){
+                    // this.nextHandNoShuffle();
+                    return
+                }
+                this.nextHand();
                 return
             }
         }
