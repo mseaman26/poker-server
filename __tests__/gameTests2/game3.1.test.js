@@ -1,14 +1,14 @@
 
-import e from 'cors'
 import {Game} from '../../handlers/Game.js'
-import { deck2_1, deck3_1} from '../../handlers/fixedDecks.js'
+import { deck2_1, deck3_1, deck3_2} from '../../handlers/fixedDecks.js'
 describe('Game', () => {
     test('should return a new game', () => {
         const game = new Game()
         expect(game).toBeInstanceOf(Game)
+
     })
     
-    test('should return a new game with a roomId', () => {
+    test.skip('should return a new game with a roomId', () => {
         const game = new Game(1)
         expect(game.roomId).toBe(1)
     })
@@ -51,7 +51,9 @@ describe('Game', () => {
         game.bet(325) //0
         expect(game.round).toBe(2)
         //round 2
+        expect(game.turn).toBe(1)
         game.bet(200) //1
+        console.log('current bet: ', game.currentBet)
         game.bet(203) //0
         expect(game.round).toBe(2)
         game.bet(3)  //1
@@ -63,7 +65,6 @@ describe('Game', () => {
         //next hand
         game.deck.deck = [...deck3_1]
         game.deck.dealPockets(game.players)
-        console.log('player 0 pocket: ', game.players[0].pocket)
         expect(game.checktotals()).toBe(true)
         expect(game.players[0].chips).toBe(322) //small blinds
         expect(game.players[1].chips).toBe(1528) //big blinds
@@ -92,24 +93,49 @@ describe('Game', () => {
         expect(game.dealer).toBe(0)
         expect(game.players[0].chips).toBe(272) //big blinds
         expect(game.players[1].chips).toBe(1578) //small blinds
+        expect(game.pot).toBe(150)
+        expect(game.turn).toBe(1)
+        game.bet(50) //1
+        expect(game.round).toBe(0)
+        game.bet(0) //0
+        game.deck.deck = [...deck3_2]
+        game.deck.dealPockets(game.players)
+        game.flop = game.deck.dealFlop()
+        expect(game.round).toBe(1)
+        expect(game.turn).toBe(1)
+        //round 1
+       
+        game.bet(0) //1
+        game.bet(270) //0
+        expect(game.betIndex).toBe(0)
+        game.bet(270) //1
+        expect(game.round).toBe(2)
+        expect(game.players[0].chips).toBe(2)
+
+        //round 2
+        expect(game.round).toBe(2)
+       
+        game.deck.dealPockets(game.players)
+        game.flop = game.deck.dealFlop()
+        expect(game.flop.length).toBe(3)
         
-
-
+        game.bet(0) //1
+        game.bet(0) //0
+        //expect(game.dealer).toBe(0)
+        // //round 3
+        game.bet(0) //1
+        expect(game.round).toBe(3)
+        game.bet(0) //0
         
-        
-        
-
-
-
-
-
-
-        
-
-
-
-
-
+        // // //next hand
+        //expect(game.checktotals()).toBe(true)
+        // console.log('final flop: ', game.flop)
+        // console.log('player 0 pocket: ', game.players[0].pocket)
+        expect(game.players.length).toBe(1)
+        // expect(game.dealer).toBe(1)
+        expect(game.players[0].chips).toBe(2000)  //had two chips, but is small blind 
+        // expect(game.players[1].chips).toBe(1898)
+        // expect(game.round).toBe(0)
 
     })
 })

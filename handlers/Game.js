@@ -28,6 +28,9 @@ export class Game{
         this.flop = []
         this.handHandler = new HandHandler();
         this.isTest = false;
+        this.isFrontEndTest = false;
+        this.nextHandCallCount = 0;
+        this.nextHandNoShuffleCallCount = 0;
     }
     
     startGame(){
@@ -57,18 +60,20 @@ export class Game{
     }
 
     nextTurn(){
+        console.log('current bet is: ', this.currentBet)
+        // let maxAllInBet = 0;
+        // for(let i = 0; i < this.players.length; i++){
+        //     if(this.players[i].allIn !== null){
+        //         maxAllInBet = Math.max(maxAllInBet, this.players[i].bet);
+        //     }
+        // }
+        // console.log('max all in bet: ', maxAllInBet)
         if(this.allInCount + this.foldedCount === this.players.length){
             this.nextRound()
-            // this.handleNumericalHands();
             return
         }
-        if(this.foldedCount === this.players.length - 1){
-            this.nextRound()
-            // this.handleNumericalHands();
-            return
-        }
-        this.turn = (this.turn + 1) % this.players.length;
-        if(this.turn === this.betIndex){
+        if(this.allInCount + this.foldedCount === this.players.length -1 && this.currentBet === 0){
+            console.log('option 1')
             for(let i = 0; i < this.players.length; i++){
                 if(this.players[i].allIn !== null){
                     let newMax = 0
@@ -78,65 +83,110 @@ export class Game{
                     this.players[i].maxWin = newMax;
                 }
             }
+            console.log('calling next round within next turn option 1') 
+            this.nextRound()
+            // this.handleNumericalHands();
+            return
+        }
+        if(this.foldedCount === this.players.length - 1){
+            console.log('option 2')
+            for(let i = 0; i < this.players.length; i++){
+                if(this.players[i].allIn !== null){
+                    let newMax = 0
+                    for(let j = 0; j < this.players.length; j++){
+                        newMax += Math.min(this.players[j].bet, this.players[i].allIn);
+                    }
+                    this.players[i].maxWin = newMax;
+                }
+            }
+            console.log('calling next round within next turn option 2') 
+            this.nextRound()
+            // this.handleNumericalHands();
+            return
+        }
+        this.turn = (this.turn + 1) % this.players.length;
+        if(this.turn === this.betIndex){
+            console.log('option 3')
+            for(let i = 0; i < this.players.length; i++){
+                if(this.players[i].allIn !== null){
+                    let newMax = 0
+                    for(let j = 0; j < this.players.length; j++){
+                        newMax += Math.min(this.players[j].bet, this.players[i].allIn);
+                    }
+                    this.players[i].maxWin = newMax;
+                }
+            }
+            console.log('calling next round within next turn option 3') 
             this.nextRound();
             return
         }
         else if(this.players[this.turn].folded === true){
+            console.log('skipping folded player and calling nextturn within next turn')
             this.nextTurn();
         }
         else if(this.players[this.turn].allIn !== null){
+            console.log('skipping all in player and calling nextturn within next turn')
             this.nextTurn();
         }
 
         
     }
     setMaxBet(){
-        if(this.allInCount + this.foldedCount === this.players.length - 1){
-            this.nextRound()
-            // this.handleNumericalHands();
-            return
-        }
-        if(this.foldedCount === this.players.length - 1){
-            this.nextRound()
-            // this.handleNumericalHands();
-            return
-        }
-        let secondHighest = 0;
-        let highest = 0;
-        for(let i = 0; i < this.players.length; i++){
-            if(i===1){
-            }
-            if(this.players[i].folded === false){
-                if(this.players[i].chips > highest){
-                    secondHighest = highest;
-                    highest = this.players[i].chips;
-                }
-                else if(this.players[i].chips > secondHighest){
-                    secondHighest = this.players[i].chips;
-                }
-            }
-        }
-        this.maxBet = secondHighest;
+        // console.log('setting max bet')
+        // // if(this.allInCount + this.foldedCount === this.players.length - 1){
+        // //     console.log('calling nextRound within setMaxBet option 1')
+        // //     this.nextRound()
+        // //     // this.handleNumericalHands();
+        // //     return
+        // // }
+        // if(this.foldedCount === this.players.length - 1){
+        //     console.log('calling nextRound within setMaxBet option 2')
+        //     this.nextRound()
+        //     // this.handleNumericalHands();
+        //     return
+        // }
+        // let secondHighest = 0;
+        // let highest = 0;
+        // for(let i = 0; i < this.players.length; i++){
+        //     if(i===1){
+        //     }
+        //     if(this.players[i].folded === false){
+        //         if(this.players[i].chips > highest){
+        //             secondHighest = highest;
+        //             highest = this.players[i].chips;
+        //         }
+        //         else if(this.players[i].chips > secondHighest){
+        //             secondHighest = this.players[i].chips;
+        //         }
+        //     }
+        // }
+        // this.maxBet = secondHighest;
     }
     nextRound(){
-        console.log('callin nextRound')
+        console.log('calling next round')
         if(this.round === 0){
             this.flop = this.deck.dealFlop();
-            console.log('flop in nextround: ', this.flop)
         }
+        
         else if(this.round === 1){
             this.flop.push(this.deck.dealCard());
         }
         else if(this.round === 2){
             this.flop.push(this.deck.dealCard());
+            //attaching the hand info to send to the front end
+            for(let i = 0; i < this.players.length; i++){
+                this.handHandler.hand = [...this.players[i].pocket.concat(this.flop)];
+                this.players[i].actualHand = this.handHandler.findHand();
+            }
         }
         else{
             this.handleNumericalHands();
-            if(this.isTest){
-                this.nextHandNoShuffle();
-                return
-            }
-            this.nextHand();
+            // if(this.isTest || this.isFrontEndTest){
+            //     console.log('about to call nexthandnoshuffle in nextround line 141')
+            //     this.nextHandNoShuffle();
+            //     return
+            // }
+            // this.nextHand();
             return
         }
        
@@ -149,17 +199,23 @@ export class Game{
         
         this.betIndex = null;
         this.turn = this.dealer;
+        console.log('calling next turn within nextround')
         this.nextTurn();
     }
     nextHand(){
+        console.log('next hand')
+        this.nextHandCallCount++
         //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
+        this.deck.deck = []
         this.deck.createDeck();
         this.deck.shuffleDeck();
         this.deck.shuffleDeck();
         this.deck.shuffleDeck();
+        this.flop = [];
         let newDealerIndex = 0
         let currentIndex = 0
         while(currentIndex <= this.dealer){
+            
             if(this.players[currentIndex].chips > 0){
                 newDealerIndex++
             }
@@ -187,11 +243,13 @@ export class Game{
         this.allInCount = 0;
         this.setMaxBet();
         this.bet(Math.floor(this.bigBlind / 2));
+        console.log('big blind', this.bigBlind)
         this.bet(this.bigBlind);
 
         this.betIndex = null;
         this.deck.dealPockets(this.players);
-        console.log('players at end of nextHand: ', this.players)
+        console.log('end of nexthand')
+        console.log('current turn is: ', this.turn)
     }
     checktotals(){
         let moneyInPotSum = 0
@@ -208,7 +266,6 @@ export class Game{
 
     }
     bet(amount){
-
         if(this.players[this.turn].bet + amount > this.currentBet){
             this.betIndex = this.turn;
         }
@@ -238,21 +295,27 @@ export class Game{
             this.players[this.turn].moneyInPot += amount;
             this.players[this.turn].bet += amount;
         }
-
         this.nextTurn();    
     }
     fold(){
         this.players[this.turn].folded = true;
         this.foldedCount += 1;
+        console.log('calling next turn within fold')
         this.nextTurn();
     }
-    winHand(turn){
-        this.players[turn].chips += this.pot;
-        this.foldedCount = 0;
-        this.nextHand();
-    }
+    // winHand(turn){
+    //     this.players[turn].chips += this.pot;
+    //     this.foldedCount = 0;
+    //     this.nextHand();
+    // }
     handleNumericalHands(){
-        console.log('callin handleNumericalHands')
+        console.log('handling numerical hands')
+        if(this.players.length === 1){
+            this.players[0].chips += this.pot;
+            this.pot = 0;
+            this.active = false;
+            return
+        }
         let rankedHands = [];
         for(let i = 0; i < this.players.length; i++){
             this.handHandler.hand = [...this.players[i].pocket.concat(this.flop)];
@@ -260,10 +323,7 @@ export class Game{
 
         }
         rankedHands = rankHands(rankedHands, this.players);
-        console.log('rankedHands: ', rankedHands.hands)
-        console.log('ranked players: ', rankedHands.players)
         this.players = rankedHands.players;
-        console.log('players: ', this.players)
         for(let i = 0; i < this.players.length; i++){
             if(this.players[i].folded === true){
                 this.players[i].numericalHand = null;
@@ -300,7 +360,6 @@ export class Game{
         });
         
         handledHands.sort((a, b) => b[0].numericalHand - a[0].numericalHand);
-        console.log('handledHands: ', handledHands) 
         
         //
         for(let i = 0; i < handledHands.length; i++){
@@ -310,22 +369,38 @@ export class Game{
                     //if current winner is not all in
                     if(this.players[handledHands[i][j].index].allIn === null){
                         if(handledHands[i].length === 1){
-                            console.log('one winner')
                             this.players[handledHands[i][j].index].chips += this.pot;
                             this.pot = 0;
+                            if(this.isTest){
+                                this.nextHandNoShuffle();
+                                return
+                            }
+                            if(this.isFrontEndTest){
+                                this.nextHandNoShuffle();
+                                return
+                            }
+                            this.nextHand();
                             return
                         }else{
-                            console.log('splitting pot of ', this.pot)
                             let denom = handledHands[i].length;
-                            console.log('denom: ', denom)
-                            console.log('pot: ', this.pot)
                             for(let k = 0; k < handledHands[i].length; k++){
-                                console.log('player', handledHands[i][k].index, 'gets: ', Math.floor(this.pot / denom))
                                 this.players[handledHands[i][k].index].chips += Math.floor(this.pot / denom);
                                 // handledHands[i][k].chips += Math.floor(this.pot / denom);
                                 this.pot -= Math.floor(this.pot / denom);
                                 denom--
                             }
+                            if(this.isTest){
+                                this.nextHandNoShuffle();
+                                return
+                            }
+                            if(this.isFrontEndTest){
+                                this.nextHandNoShuffle();
+                                return
+                            }
+                            this.players[handledHands[i][j].index].chips += this.pot;
+                            this.pot = 0;
+                            this.nextHand();
+                            return
                             // let carryOver = this.pot % handledHands[i].length;
                             // this.players[handledHands[i][j].index].chips += splitPot;
                             // this.pot -= splitPot;
@@ -336,8 +411,7 @@ export class Game{
                             //     return
                             // }
                         }
-                        this.players[handledHands[i][j].index].chips += this.pot;
-                        this.pot = 0;
+                        
                     }else{
                     //if current winner is all in
                         let splitPot = 0
@@ -359,7 +433,11 @@ export class Game{
                             this.carryOver = carryOver;
                             this.pot = 0;
                             if(this.isTest){
-                                // this.nextHandNoShuffle();
+                                this.nextHandNoShuffle();
+                                return
+                            }
+                            if(this.isFrontEndTest){
+                                this.nextHandNoShuffle();
                                 return
                             }
                             this.nextHand();
@@ -385,7 +463,11 @@ export class Game{
             }
             else{
                 if(this.isTest){
-                    // this.nextHandNoShuffle();
+                    this.nextHandNoShuffle();
+                    return
+                }
+                if(this.isFrontEndTest){
+                    this.nextHandNoShuffle();
                     return
                 }
                 this.nextHand();
@@ -417,6 +499,7 @@ export class Game{
         this.deck.dealPockets(this.players);
     }
     nextHandNoShuffle(){
+        this.nextHandNoShuffleCallCount++
         //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
         let newDealerIndex = 0
         let currentIndex = 0
@@ -425,6 +508,12 @@ export class Game{
                 newDealerIndex++
             }
             currentIndex++
+        }
+        for(let i = 0; i < this.players.length; i++){
+            if(this.players[i].chips === 0){
+                this.players[i].pocket = []
+                this.players[i].eliminated = true;
+            }
         }
         this.players = this.players.filter(player => player.chips > 0);
         for(let i = 0; i < this.players.length; i++){

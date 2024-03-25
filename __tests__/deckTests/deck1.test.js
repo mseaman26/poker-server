@@ -3,6 +3,7 @@ import {Game} from '../../handlers/Game.js'
 
 describe('Game', () => {
     test('should return a new game', () => {
+        console.log('jest not consol logging')
         const game = new Game()
         expect(game).toBeInstanceOf(Game)
     })
