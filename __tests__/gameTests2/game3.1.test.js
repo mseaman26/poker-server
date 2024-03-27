@@ -126,14 +126,14 @@ describe('Game', () => {
         game.bet(0) //1
         expect(game.round).toBe(3)
         game.bet(0) //0
-        
+        console.log('gameksjhdf', game)
         // // //next hand
         //expect(game.checktotals()).toBe(true)
         // console.log('final flop: ', game.flop)
         // console.log('player 0 pocket: ', game.players[0].pocket)
-        expect(game.players.length).toBe(1)
+        expect(game.players.length).toBe(2)
         // expect(game.dealer).toBe(1)
-        expect(game.players[0].chips).toBe(2000)  //had two chips, but is small blind 
+        expect(game.players[1].chips).toBe(1898)  //had two chips, but is small blind 
         // expect(game.players[1].chips).toBe(1898)
         // expect(game.round).toBe(0)
 

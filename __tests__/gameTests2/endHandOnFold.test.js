@@ -125,6 +125,7 @@ describe('Game', () => {
         game.bet(0)
         expect(game.round).toBe(3)
         game.bet(0)
+        game.nextHand()
         expect(game.round).toBe(0)
         expect(game.currentBet).toBe(100)
 

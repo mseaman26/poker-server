@@ -125,6 +125,7 @@ describe('Game', () => {
         game.bet(0)
         expect(game.round).toBe(3)
         game.bet(0)
+        game.nextHand()
         expect(game.round).toBe(0)
         expect(game.currentBet).toBe(100)
 
@@ -169,6 +170,7 @@ describe('Game', () => {
         //chips after blinds
         expect(game.players[0].chips).toBe(350) //small blinds
         expect(game.players[1].chips).toBe(1500) //big blinds
+        console.log('game: ',game)
         expect(game.checktotals()).toBe(true)
         expect(game.turn).toBe(0)
         //round 0

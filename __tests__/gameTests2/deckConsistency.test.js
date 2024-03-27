@@ -65,7 +65,7 @@ describe('Game', () => {
         expect(game.round).toBe(3)
         game.bet(0) //0
 
-
+        game.nextHand()
 
         expect(game.round).toBe(0)
         expect(game.deck.deck.length).toBe(48)
@@ -95,6 +95,7 @@ describe('Game', () => {
         game.bet(0)//0
         expect(game.round).toBe(3)
         game.bet(0)//1
+        game.nextHand()
         expect(game.round).toBe(0)
         expect(game.deck.deck.length).toBe(48)
         expect(hasDuplicates(game.deck.deck)).toBe(false)
@@ -167,6 +168,7 @@ describe('Game', () => {
         game.bet(0) 
         expect(game.round).toBe(3)
         game.bet(0) 
+        game.nextHand()
         expect(game.deck.deck.length).toBe(42)
         expect(hasDuplicates(game.deck.deck)).toBe(false)  
         game.deck.deck[0] = game.deck.deck[1]

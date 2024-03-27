@@ -66,13 +66,12 @@ export function handleGameEvents (io, socket){
     socket.on('bet', (data) => {
         console.log('bet data: ', data)
         let game = activeGames.get(data.roomId);
-        let currentRound = game.round;
         game.bet(data.amount);
-        console.log('current round: ', currentRound)
-        console.log('new round: ', game.round)
-        console.log('emitting end hand')
-        console.log('game after bet: ', activeGames.get(data.roomId))
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        if(game.flipCards){
+            socket.to(data.roomId).emit('flip cards', game);
+        }
+        
        
     })
     socket.on('fold', (data) => {
@@ -83,31 +82,25 @@ export function handleGameEvents (io, socket){
         activeGames.get(data.roomId).fold();
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
-    // socket.on('next round', async (roomId) => {  
-    //     await activeGames.get(roomId).nextRound();
-    //     // io.to(roomId).emit('next round', activeGames.get(roomId));
-    //     io.to(roomId).emit('game state', activeGames.get(roomId));
-    // });
-    // socket.on('win hand', async (data) => {
-    //     console.log('win hand data: ', data)
-    //     console.log('win hand turn: ', data.turn)
-    //     await activeGames.get(data.roomId).winHand(data.turn);
-    //     io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
-    // });
-    // socket.on('next hand', async (roomId, callback) => {
-    //     console.log('roomId: ', roomId)
-    //     console.log('actve games: ', activeGames)   
-    //     await activeGames.get(roomId).nextHand();
-    //     io.to(roomId).emit('next hand', activeGames.get(roomId));
-    //     io.to(roomId).emit('game state', activeGames.get(roomId));
-    //     callback();
-
-    // });
+    socket.on('next flip', (data) => {
+        console.log('next flip roomId: ', data.roomId)  
+        let game = activeGames.get(data.roomId);
+        game.nextFlip();
+        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        if(game.flipCards){
+            socket.to(data.roomId).emit('flip cards', game);
+        }
+    })
     socket.on('all in', (data) => {
         console.log('all in data: ', data)
         activeGames.get(data.roomId).players[data.turn].allIn = data.amount;
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     });
+    socket.on('next hand', (data) => {
+        console.log('next hand data: ', data)
+        activeGames.get(data.roomId).nextHand();
+        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+    })
     socket.on('end game', (roomId) => {
         console.log('game ended: ', roomId)
         activeGames.delete(roomId);
