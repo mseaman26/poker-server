@@ -22,7 +22,22 @@ export const handleJoinRoom = (io, socket, room, userId, username) => {
       io.to(room).emit('updated users in room', Array.from(usersInRooms.get(room).values()));
   } else {
       console.log('users in room:', usersInRooms.get(room));
+      console.log('existing user:', existingUser);
+      for (const [socketId, user] of usersInRooms.get(room)) {
+          if (user.userId === userId) {
+              console.log('socketId:', socketId);
+              console.log('socket.id:', socket.id);
+              if (socketId === socket.id) {
+                  console.log(`User with userId ${userId} is already in the room.`);
+                  return;
+              }
+              usersInRooms.get(room).delete(socketId);
+          }
+      }
+      usersInRooms.get(room).set(socket.id, { userId, username });
+      console.log('users in room after deletion:', usersInRooms.get(room));
       console.log(`User with userId ${userId} is already in the room.`);
+      socket.emit('game state', { userId })
   }
   
 }

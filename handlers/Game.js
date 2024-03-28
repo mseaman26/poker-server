@@ -121,11 +121,7 @@ export class Game{
             }
             this.turn = null
             this.flipCards = true
-            // if(this.isTest){
-            //     this.nextHandNoShuffle();
-            //     return
-            // }
-            // this.handleNumericalHands();
+
             return
         }
         
@@ -283,7 +279,7 @@ export class Game{
         this.round = 0;
         this.pot = 0;
         if(this.players.length === 1){
-            this.active = false;
+            // this.active = false;
             return
         }
         this.currentBet = 0;
@@ -362,7 +358,6 @@ export class Game{
         if(this.players.length === 1){
             this.players[0].chips += this.pot;
             this.pot = 0;
-            this.active = false;
             return
         }
         let rankedHands = [];
@@ -578,7 +573,6 @@ export class Game{
         this.round = 0;
         this.pot = 0;
         if(this.players.length === 1){
-            this.active = false;
             return
         }
         this.currentBet = 0;

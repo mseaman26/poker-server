@@ -38,7 +38,7 @@ export function handleGameEvents (io, socket){
         }else{
             activeGames.get(data.roomId).startGame();
             io.to(data.roomId).emit('start game', activeGames.get(data.roomId));
-            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+                io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }
         
     });
