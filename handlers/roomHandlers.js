@@ -35,9 +35,10 @@ export const handleJoinRoom = (io, socket, room, userId, username) => {
           }
       }
       usersInRooms.get(room).set(socket.id, { userId, username });
+      socket.emit('refresh');
+
       console.log('users in room after deletion:', usersInRooms.get(room));
-      console.log(`User with userId ${userId} is already in the room.`);
-      socket.emit('game state', { userId })
+    
   }
   
 }

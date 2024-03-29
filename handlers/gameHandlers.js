@@ -67,10 +67,12 @@ export function handleGameEvents (io, socket){
         console.log('bet data: ', data)
         let game = activeGames.get(data.roomId);
         game.bet(data.amount);
-        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        
         if(game.flipCards){
             socket.to(data.roomId).emit('flip cards', game);
         }
+        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+
         
        
     })
