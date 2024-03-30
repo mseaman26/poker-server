@@ -246,6 +246,8 @@ export class Game{
             if(this.players[i].chips > highest){
                 secondHighest = highest
                 highest = this.players[i].chips
+            }else if(this.players[i].chips > secondHighest){
+                secondHighest = this.players[i].chips
             }
         }
         this.maxBet = secondHighest
