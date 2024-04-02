@@ -20,6 +20,7 @@ export class Game{
         this.betIndex = null
         this.foldedCount = 0;
         this.allInCount = 0;
+        this.eliminatedCount = 0;
         this.carryOver = 0;
         this.deck = new Deck();
         this.totalChips = 0;
@@ -70,7 +71,7 @@ export class Game{
             return
         }
         
-       if(this.foldedCount === this.players.length - 1){
+       if(this.foldedCount + this.eliminatedCount === this.players.length - 1){
             //win by fold
             for(let i = 0; i < this.players.length; i++){
                 if(this.players[i].allIn !== null){
@@ -100,7 +101,7 @@ export class Game{
             // this.handleNumericalHands();
             return
         }
-        else if(this.allInCount + this.foldedCount === this.players.length -1 && this.currentBet === 0 && this.players.length > 1){
+        else if(this.allInCount + this.foldedCount + this.eliminatedCount === this.players.length -1 && this.currentBet === 0 && this.players.length > 1){
             //flip cards
             console.log('flip cards. round: ', this.round)
             for(let i = 0; i < this.players.length; i++){
@@ -141,6 +142,12 @@ export class Game{
                 this.nextTurn();
             }
             else if(this.players[this.turn].allIn !== null){
+                this.nextTurn();
+            }
+            else if(this.players[this.turn].chips <= 0){
+                this.nextTurn();
+            }
+            else if(this.players[this.turn].eliminated === true){
                 this.nextTurn();
             }
         } 
@@ -232,12 +239,18 @@ export class Game{
         let newDealerIndex = 0
         let currentIndex = 0
         //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
-        while(currentIndex <= this.dealer){
-            
-            if(this.players[currentIndex].chips > 0){
-                newDealerIndex++
+        while(true){
+            this.dealer = (this.dealer + 1) % this.players.length;
+            if(this.players[this.dealer].chips > 0){
+                break
             }
-            currentIndex++
+        }
+        for(let i = 0; i < this.players.length; i++){
+            if(this.players[i].chips <= 0 && this.players[i].eliminated === false){
+                this.players[i].pocket = []
+                this.players[i].eliminated = true;
+                this.eliminatedCount++
+            }
         }
         //set maxBet to second Highest chip holder's chip amount
         let secondHighest = 0
@@ -251,7 +264,7 @@ export class Game{
             }
         }
         this.maxBet = secondHighest
-        this.players = this.players.filter(player => player.chips > 0);
+        // this.players = this.players.filter(player => player.chips > 0);
         for(let i = 0; i < this.players.length; i++){
             this.players[i].bet = 0;
             this.players[i].allIn = null;
@@ -260,8 +273,14 @@ export class Game{
             this.players[i].folded = false;
         }
         //user newdealerindex to set the new dealer
-        this.dealer = newDealerIndex % this.players.length;
+        // this.dealer = newDealerIndex % this.players.length;
         this.turn = (this.dealer + 1) % this.players.length;
+        while(true){
+            if(this.players[this.turn].chips > 0){
+                break
+            }
+            this.turn = (this.turn + 1) % this.players.length;
+        }
         this.round = 0;
         this.pot = 0;
         if(this.players.length === 1){
@@ -272,6 +291,9 @@ export class Game{
         this.currentBet = 0;
         this.foldedCount = 0;
         this.allInCount = 0;
+        if(this.eliminatedCount === this.players.length - 1){
+            return
+        }
         console.log('turn inside NextHand before small blind: ', this.turn)    
         this.bet(Math.floor(this.bigBlind / 2));
         console.log('turn inside NextHand after small blind: ', this.turn)  
@@ -364,6 +386,9 @@ export class Game{
         this.players = rankedHands.players;
         for(let i = 0; i < this.players.length; i++){
             if(this.players[i].folded === true){
+                this.players[i].numericalHand = null;
+            }
+            if(this.players[i].eliminated === true){
                 this.players[i].numericalHand = null;
             }
         }
@@ -559,7 +584,7 @@ export class Game{
                 this.players[i].eliminated = true;
             }
         }
-        this.players = this.players.filter(player => player.chips > 0);
+        // this.players = this.players.filter(player => player.chips > 0);
         for(let i = 0; i < this.players.length; i++){
             this.players[i].bet = 0;
             this.players[i].allIn = null;

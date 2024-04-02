@@ -146,18 +146,23 @@ export class HandHandler  {
             let currentIndex = i
             let currentStraight = []
             currentStraight.push(sortedHand[currentIndex])
-            while(sortedHand[currentIndex].value + 1 === sortedHand[currentIndex + 1].value){
-                currentStraight.push(sortedHand[currentIndex + 1])
-                currentIndex++
-                if(currentIndex >= i + 4){
+            for(let j = i + 1; j < sortedHand.length; j++){
+                
+                if(currentStraight[currentStraight.length-1].value === sortedHand[j].value - 1){
+                    currentStraight.push(sortedHand[j])
+                } 
+                if(currentStraight.length >= 5){
+                    
                     break;
                 }
             }
+            
             
             if(currentStraight.length >= 5){
                 straights.push(currentStraight)
             }
         }
+        console.log('final straights', straights)
         return straights
     }
     hasThreeOfAKind() {

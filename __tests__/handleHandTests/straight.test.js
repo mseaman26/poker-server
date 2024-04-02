@@ -127,5 +127,26 @@ describe("handleHands", () => {
         { value: 7, suit: "hearts" }
       ]
     ]);
+    hand = [
+      { value: 6, suit: "hearts" },
+      { value: 4, suit: "diamonds" },
+      { value: 7, suit: "hearts" },
+      { value: 6, suit: "hearts" },
+      { value: 5, suit: "hearts" },
+      { value: 11, suit: "spades" },
+      { value: 3, suit: "clubs" },
+    ];
+    currentHandHandler.hand = hand;
+    result = currentHandHandler.hasStraights();
+    console.log(result)
+    expect(result).toEqual([
+      [
+        { value: 3, suit: "clubs" },
+        { value: 4, suit: "diamonds" },
+        { value: 5, suit: "hearts" },
+        { value: 6, suit: "hearts" },
+        { value: 7, suit: "hearts" }
+      ]
+    ]);
   })
 })
