@@ -138,6 +138,7 @@ export class HandHandler  {
     hasStraights() {
         let sortedHand = this.hand.sort((a, b) => a.value - b.value);
         let straights = []
+        console.log('sortedHand: ', sortedHand)
         let cardValues = sortedHand.map(card => card.value)
         if(cardValues.includes(14) && cardValues.includes(2) && cardValues.includes(3) && cardValues.includes(4) && cardValues.includes(5)){
             straights.push([sortedHand[6], sortedHand[0], sortedHand[1], sortedHand[2], sortedHand[3]])
@@ -162,7 +163,6 @@ export class HandHandler  {
                 straights.push(currentStraight)
             }
         }
-        console.log('final straights', straights)
         return straights
     }
     hasThreeOfAKind() {

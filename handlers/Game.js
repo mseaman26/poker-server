@@ -34,20 +34,20 @@ export class Game{
         this.nextHandNoShuffleCallCount = 0;
         this.flipCards = false
         this.handComplete = false
+        this.handWinnderInfo = []
     }
-    
+
     startGame(){
         this.handComplete = false
         this.deck.shuffleDeck();
         this.deck.shuffleDeck();
         this.deck.shuffleDeck();
 
-        for(let i = 0; i < this.players.length; i++){
-            this.totalChips += this.buyIn;
-        }
         
         this.active = true;
         for(let i = 0; i < this.players.length; i++){
+            this.totalChips += this.buyIn;
+            this.players[i].eliminated = false;
             this.players[i].chips = this.buyIn;
             this.players[i].allIn = null;
             this.players[i].bet = 0;
@@ -61,19 +61,21 @@ export class Game{
         this.betIndex = null;
         this.deck.dealPockets(this.players);
     }
-
     nextTurn(){
-        console.log('calling next turn. all in count: ', this.allInCount)
-        if(this.allInCount + this.foldedCount === this.players.length){
-            this.turn = null
-            this.flipCards = true
+        // console.log('calling next turn. all in count: ', this.allInCount)
+        // if(this.allInCount + this.foldedCount === this.players.length){
+        //     console.log('inside thing at the beginning of next turn')
+        //     this.turn = null
+        //     this.flipCards = true
 
-            return
-        }
+        //     return
+        // }
         
        if(this.foldedCount + this.eliminatedCount === this.players.length - 1){
             //win by fold
+            console.log('win by fold')
             for(let i = 0; i < this.players.length; i++){
+                //setting every players possible max win amount
                 if(this.players[i].allIn !== null){
                     let newMax = 0
                     for(let j = 0; j < this.players.length; j++){
@@ -83,6 +85,7 @@ export class Game{
                 }
                 if(this.players[i].folded === false){
                     //give money to winner by fold
+                    console.log('winner by fold: ', this.players[i])
                     this.players[i].chips += this.pot;
                     this.pot = 0;
                     if(this.isTest){
@@ -101,7 +104,7 @@ export class Game{
             // this.handleNumericalHands();
             return
         }
-        else if(this.allInCount + this.foldedCount + this.eliminatedCount === this.players.length -1 && this.currentBet === 0 && this.players.length > 1){
+        else if(this.allInCount + this.foldedCount + this.eliminatedCount >= this.players.length -1 && this.currentBet === 0 && this.players.length > 1){
             //flip cards
             console.log('flip cards. round: ', this.round)
             for(let i = 0; i < this.players.length; i++){
@@ -113,15 +116,16 @@ export class Game{
                     this.players[i].maxWin = newMax;
                 }
             } 
-            for(let i = 0; i < this.players.length; i++){
-                this.players[i].moneyInPot = 0;
-            }
+            // for(let i = 0; i < this.players.length; i++){
+            //     this.players[i].moneyInPot = 0;
+            // }
             this.turn = null
             this.flipCards = true
 
             return
         }
         else{
+            console.log('square pot!!!')
             this.turn = (this.turn + 1) % this.players.length;
             if(this.turn === this.betIndex){
                 //square pot
@@ -135,6 +139,7 @@ export class Game{
                     }
                 }
                 console.log('calling next round, square pot')
+                console.log('player 1 chips: ', this.players[1].chips)
                 this.nextRound();
                 return
             }
@@ -152,8 +157,6 @@ export class Game{
             }
         } 
     }
-
- 
     nextRound(){
         if(this.allInCount + this.foldedCount === this.players.length - 1){
             this.turn = null
@@ -198,7 +201,7 @@ export class Game{
         this.nextTurn();
     }
     nextFlip(){
-        console.log('calling next flip')
+        console.log('calling next flip, round: ', this.round)
         if(this.round === 0){
             this.flop = this.deck.dealFlop();
             this.round += 1;
@@ -214,8 +217,11 @@ export class Game{
             this.flop.push(this.deck.dealCard());
             //attaching the hand info to send to the front end
             for(let i = 0; i < this.players.length; i++){
-                this.handHandler.hand = [...this.players[i].pocket.concat(this.flop)];
-                this.players[i].actualHand = this.handHandler.findHand();
+                if(this.players[i].pocket){
+                    this.handHandler.hand = [...this.players[i].pocket.concat(this.flop)];
+                    this.players[i].actualHand = this.handHandler.findHand();
+                }
+                
             }
             this.round += 1;
             return
@@ -236,9 +242,8 @@ export class Game{
         this.deck.shuffleDeck();
         this.deck.shuffleDeck();
         this.flop = [];
-        let newDealerIndex = 0
-        let currentIndex = 0
-        //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
+        this.handWinnderInfo = []
+
         while(true){
             this.dealer = (this.dealer + 1) % this.players.length;
             if(this.players[this.dealer].chips > 0){
@@ -251,6 +256,7 @@ export class Game{
                 this.players[i].eliminated = true;
                 this.eliminatedCount++
             }
+            this.players[i].isWinner = false;
         }
         //set maxBet to second Highest chip holder's chip amount
         let secondHighest = 0
@@ -360,12 +366,8 @@ export class Game{
         this.foldedCount += 1;
         this.nextTurn();
     }
-    // winHand(turn){
-    //     this.players[turn].chips += this.pot;
-    //     this.foldedCount = 0;
-    //     this.nextHand();
-    // }
     handleNumericalHands(){
+        console.log('handling numerical hands')
         this.turn = null
         this.handComplete = true
         
@@ -396,7 +398,6 @@ export class Game{
             return { index: index, numericalHand: player.numericalHand, allIn: player.allIn };
         });
 
-        
         const groupedHands = {};
         for (let i = 0; i < hands.length; i++) {
             const key = hands[i].numericalHand;
@@ -406,7 +407,7 @@ export class Game{
                 groupedHands[key] = [hands[i]];
             }
         }
-        
+        console.log('grouped hands: ', groupedHands)
         let handledHands = Object.values(groupedHands).map(group => {
             return group.sort((a, b) => {
                 // Handle null values by placing them at the end
@@ -421,106 +422,46 @@ export class Game{
                 return a.allIn - b.allIn; // Sort by allIn amount
             });
         });
-        
+       
         handledHands.sort((a, b) => b[0].numericalHand - a[0].numericalHand);
-        
+        console.log('handled hands: ', handledHands)
         //
         for(let i = 0; i < handledHands.length; i++){
             if(this.pot > 0){
                 let splitDenom = handledHands[i].length;
+                console.log('handledHands[i]: ', handledHands[i])
+                //determine max win amount. if they're not all in, it's the pot divided by the number of players with the same hand
+                if(handledHands[i].length > 1){
+                    console.log('split!!!@')
+                }
                 for(let j = 0; j < handledHands[i].length; j++){
-                    //if current winner is not all in
-                    if(this.players[handledHands[i][j].index].allIn === null){
-                        if(handledHands[i].length === 1){
-                            this.players[handledHands[i][j].index].chips += this.pot;
-                            this.pot = 0;
-                            if(this.isTest){
-                                this.nextHandNoShuffle();
-                                return
-                            }
-                            if(this.isFrontEndTest){
-                                this.nextHandNoShuffle();
-                                return
-                            }
-                            for(let i = 0; i < this.players.length; i++){
-                                this.players[i].moneyInPot = 0
-                            }
-                            // this.nextHand();
-                            return
-                        }else{
-                            let denom = handledHands[i].length;
-                            for(let k = 0; k < handledHands[i].length; k++){
-                                this.players[handledHands[i][k].index].chips += Math.floor(this.pot / denom);
-                                // handledHands[i][k].chips += Math.floor(this.pot / denom);
-                                this.pot -= Math.floor(this.pot / denom);
-                                denom--
-                            }
-                            if(this.isTest){
-                                this.nextHandNoShuffle();
-                                return
-                            }
-                            if(this.isFrontEndTest){
-                                this.nextHandNoShuffle();
-                                return
-                            }
-                            this.players[handledHands[i][j].index].chips += this.pot;
-                            this.pot = 0;
-                            // this.nextHand();
-                            for(let i = 0; i < this.players.length; i++){
-                                this.players[i].moneyInPot = 0
-                            }
-                            return
-                            // let carryOver = this.pot % handledHands[i].length;
-                            // this.players[handledHands[i][j].index].chips += splitPot;
-                            // this.pot -= splitPot;
-                            // if(this.pot - carryOver === 0){
-                            //     this.carryOver = carryOver;
-                            //     this.pot = 0;
-                            //     // this.nextHand();
-                            //     return
-                            // }
-                        }
-                        
+                    let maxWin = 0
+                    if(handledHands[i][j].allIn === null){
+                        maxWin = this.pot ;
                     }else{
-                    //if current winner is all in
-                        let splitPot = 0
+                        maxWin = 0
                         for(let k = 0; k < this.players.length; k++){
-                            //up up each players match bet to the all in amount
-                            splitPot += Math.min(this.players[k].moneyInPot, this.players[handledHands[i][j].index].allIn);
-                            if(handledHands[i][j].index === 1){
-                            }
-
+                            maxWin += Math.min(this.players[k].moneyInPot, this.players[handledHands[i][j].index].allIn);
                         }
-                        splitPot = Math.min(splitPot, this.pot);
-                        let carryOver =  splitPot % handledHands[i].length;
-                        this.players[handledHands[i][j].index].chips += Math.floor(splitPot/ splitDenom);
-                        this.pot -= Math.floor(splitPot/ splitDenom);
-
-                        if(this.pot - carryOver === 0){
-                            this.carryOver = carryOver;
-                            this.pot = 0;
-                            if(this.isTest){
-                                this.nextHandNoShuffle();
-                                return
-                            }
-                            if(this.isFrontEndTest){
-                                this.nextHandNoShuffle();
-                                return
-                            }
-                            // this.nextHand();
-                            for(let i = 0; i < this.players.length; i++){
-                                this.players[i].moneyInPot = 0
-                            }
-                            return
-                        }
-                        splitDenom--
                     }
-                }
+                    console.log('current player: ', this.players[handledHands[i][j].index].username)
+                    console.log('max win: ', maxWin)
+                    console.log('they are getting: ', Math.min(this.pot, Math.floor(maxWin / splitDenom)))
+                    this.handWinnderInfo.push({player: this.players[handledHands[i][j].index], maxWin: maxWin})
 
-                if(this.carryOver){
-                    this.pot += this.carryOver;
-                    this.carryOver = 0; 
+                    this.players[handledHands[i][j].index].chips += Math.min(this.pot, Math.floor(maxWin / splitDenom));
+                    //take this players share out of the pot
+                    this.players[handledHands[i][j].index].moneyInPot = 0;
+                    this.pot -= Math.min(this.pot, Math.floor(maxWin / splitDenom));
+                    console.log('pot after subtraction: ', this.pot)
+                    splitDenom --;
+                    
                 }
+                
+                // if(this.carryOver){
+                //     this.pot += this.carryOver;
+                //     this.carryOver = 0; 
+                // }
                 // if(this.players[ handledHands[i][0].index].allIn === null){
                 //     let splitPot = Math.floor(this.pot / handledHands[i].length);
                 //     let carryOver = this.pot % handledHands[i].length;
@@ -532,6 +473,7 @@ export class Game{
                 // }         
             }
             else{
+                console.log('pot is not greater than 0')
                 if(this.isTest){
                     this.nextHandNoShuffle();
                     return
@@ -544,16 +486,25 @@ export class Game{
                 return
             }
         }
-        
+        if(this.isTest){
+            this.nextHandNoShuffle();
+            return
+        }
+        if(this.isFrontEndTest){
+            this.nextHandNoShuffle();
+            return
+        }
     }
     startGameNoShuffle(){
 
         for(let i = 0; i < this.players.length; i++){
-            this.totalChips += this.buyIn;
+            
         }
         
         this.active = true;
         for(let i = 0; i < this.players.length; i++){
+            this.totalChips += this.buyIn;
+            this.players[i].eliminated = false;
             this.players[i].chips = this.buyIn;
             this.players[i].allIn = null;
             this.players[i].bet = 0;
@@ -570,13 +521,12 @@ export class Game{
     nextHandNoShuffle(){
         this.nextHandNoShuffleCallCount++
         //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
-        let newDealerIndex = 0
-        let currentIndex = 0
-        while(currentIndex <= this.dealer){
-            if(this.players[currentIndex].chips > 0){
-                newDealerIndex++
+        this.turn = (this.dealer + 1) % this.players.length;
+        while(true){
+            this.dealer = (this.dealer + 1) % this.players.length;
+            if(this.players[this.dealer].chips > 0){
+                break
             }
-            currentIndex++
         }
         for(let i = 0; i < this.players.length; i++){
             if(this.players[i].chips === 0){
@@ -593,7 +543,7 @@ export class Game{
             this.players[i].folded = false;
         }
         //user newdealerindex to set the new dealer
-        this.dealer = newDealerIndex % this.players.length;
+
         this.turn = (this.dealer + 1) % this.players.length;
         this.round = 0;
         this.pot = 0;

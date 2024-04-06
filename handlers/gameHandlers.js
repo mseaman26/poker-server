@@ -70,10 +70,9 @@ export function handleGameEvents (io, socket){
         
         if(game.flipCards){
             socket.to(data.roomId).emit('flip cards', game);
+        }else{
+            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }
-        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
-
-        
        
     })
     socket.on('fold', (data) => {
@@ -81,8 +80,13 @@ export function handleGameEvents (io, socket){
         // activeGames.get(data.roomId).players[data.turn].folded = true;
         // activeGames.get(data.roomId).foldedCount += 1;
         // activeGames.get(data.roomId).nextTurn();
-        activeGames.get(data.roomId).fold();
-        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        let game = activeGames.get(data.roomId);
+        game.fold();
+        if(game.flipCards){
+            socket.to(data.roomId).emit('flip cards', game);
+        }else{
+            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        }
     })
     socket.on('next flip', (data) => {
         console.log('next flip roomId: ', data.roomId)  

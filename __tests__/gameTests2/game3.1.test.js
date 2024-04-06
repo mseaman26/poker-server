@@ -8,7 +8,7 @@ describe('Game', () => {
 
     })
     
-    test.skip('should return a new game with a roomId', () => {
+    test('should return a new game with a roomId', () => {
         const game = new Game(1)
         expect(game.roomId).toBe(1)
     })
@@ -68,7 +68,7 @@ describe('Game', () => {
         expect(game.checktotals()).toBe(true)
         expect(game.players[0].chips).toBe(322) //small blinds
         expect(game.players[1].chips).toBe(1528) //big blinds
-       
+        console.log('players at beginning of hand: ', game.players)
         expect(game.round).toBe(0)
         expect(game.dealer).toBe(1)
         expect(game.turn).toBe(0)
@@ -80,17 +80,25 @@ describe('Game', () => {
         //round 1
         game.bet(100) //0
         game.bet(100) //1
+       
         //round 2
         game.bet(0) //0
+        expect(game.round).toBe(2)
         game.bet(0) //1
         //round 3
         game.bet(0) //0
-        expect(game.round).toBe(3)
-        expect(game.players[0].moneyInPot).toBe(200)
+       
+        // expect(game.round).toBe(3)
+        // expect(game.players[0].moneyInPot).toBe(200)
+        expect(game.pot).toBe(400)
         game.bet(0) //1
+       
+        console.log('players at end of hand: ', game.players)
+
         expect(game.round).toBe(0)
         expect(game.checktotals()).toBe(true)
         expect(game.dealer).toBe(0)
+        expect(game.pot).toBe(150)
         expect(game.players[0].chips).toBe(272) //big blinds
         expect(game.players[1].chips).toBe(1578) //small blinds
         expect(game.pot).toBe(150)

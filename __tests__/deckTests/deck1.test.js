@@ -113,6 +113,7 @@ describe('Game', () => {
 
 
         game.startGameNoShuffle()
+        console.log('game: ', game)
 
         expect(game.players[0].pocket).toEqual([ { value: 2, suit: 'clubs' }, { value: 7, suit: 'clubs' } ])
         expect(game.players[1].pocket).toEqual([{ value: 7, suit: 'spades' }, { value: 8, suit: 'diamonds' }])

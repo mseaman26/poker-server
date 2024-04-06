@@ -23,7 +23,9 @@ export class Deck{
         }
         dealPockets(players){
             for(let i = 0; i < players.length; i++){
-                players[i].pocket = [this.dealCard(), this.dealCard()];
+                if(players[i].eliminated === false){
+                    players[i].pocket = [this.dealCard(), this.dealCard()];
+                }
             }
         }
         dealFlop(){
