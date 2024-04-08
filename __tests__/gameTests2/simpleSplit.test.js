@@ -127,12 +127,10 @@ describe('everyone has copies of the same card for all their cards', () => {
         expect(game.players[0].allIn).toBe(500)
         game.bet(400) //1
         game.nextFlip()
-        console.log('player 2 pocket: ', game.players[2].pocket)
         expect(game.round).toBe(2)
         game.nextFlip()
         expect(game.round).toBe(3)
         expect(game.pot).toBe(1400)
-        console.log('player 0 pocket: ', game.players[0].pocket)
         game.deck.deck = [...fixedDeck]
         game.nextFlip()
         

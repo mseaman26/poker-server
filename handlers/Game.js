@@ -62,18 +62,10 @@ export class Game{
         this.deck.dealPockets(this.players);
     }
     nextTurn(){
-        // console.log('calling next turn. all in count: ', this.allInCount)
-        // if(this.allInCount + this.foldedCount === this.players.length){
-        //     console.log('inside thing at the beginning of next turn')
-        //     this.turn = null
-        //     this.flipCards = true
 
-        //     return
-        // }
         
        if(this.foldedCount + this.eliminatedCount === this.players.length - 1){
             //win by fold
-            console.log('win by fold')
             for(let i = 0; i < this.players.length; i++){
                 //setting every players possible max win amount
                 if(this.players[i].allIn !== null){
@@ -85,7 +77,6 @@ export class Game{
                 }
                 if(this.players[i].folded === false){
                     //give money to winner by fold
-                    console.log('winner by fold: ', this.players[i])
                     this.players[i].chips += this.pot;
                     this.pot = 0;
                     if(this.isTest){
@@ -106,7 +97,6 @@ export class Game{
         }
         else if(this.allInCount + this.foldedCount + this.eliminatedCount >= this.players.length -1 && this.currentBet === 0 && this.players.length > 1){
             //flip cards
-            console.log('flip cards. round: ', this.round)
             for(let i = 0; i < this.players.length; i++){
                 if(this.players[i].allIn !== null){
                     let newMax = 0
@@ -125,7 +115,7 @@ export class Game{
             return
         }
         else{
-            console.log('square pot!!!')
+
             this.turn = (this.turn + 1) % this.players.length;
             if(this.turn === this.betIndex){
                 //square pot
@@ -138,8 +128,6 @@ export class Game{
                         this.players[i].maxWin = newMax;
                     }
                 }
-                console.log('calling next round, square pot')
-                console.log('player 1 chips: ', this.players[1].chips)
                 this.nextRound();
                 return
             }
@@ -163,7 +151,6 @@ export class Game{
             this.flipCards = true
             return
         }
-        console.log('calling next round')
         if(this.round === 0){
             this.flop = this.deck.dealFlop();
         }
@@ -181,12 +168,6 @@ export class Game{
         }
         else{
             this.handleNumericalHands();
-            // if(this.isTest || this.isFrontEndTest){
-            //     console.log('about to call nexthandnoshuffle in nextround line 141')
-            //     this.nextHandNoShuffle();
-            //     return
-            // }
-            // this.nextHand();
             return
         }
        
@@ -201,7 +182,6 @@ export class Game{
         this.nextTurn();
     }
     nextFlip(){
-        console.log('calling next flip, round: ', this.round)
         if(this.round === 0){
             this.flop = this.deck.dealFlop();
             this.round += 1;
@@ -227,7 +207,6 @@ export class Game{
             return
         }else{
             this.flipCards = false
-            console.log('calling handle numerical hands from next flip, players: ', this.players)
             this.handleNumericalHands();
             return
         
@@ -299,14 +278,9 @@ export class Game{
         this.allInCount = 0;
         if(this.eliminatedCount === this.players.length - 1){
             return
-        }
-        console.log('turn inside NextHand before small blind: ', this.turn)    
+        }  
         this.bet(Math.floor(this.bigBlind / 2));
-        console.log('turn inside NextHand after small blind: ', this.turn)  
         this.bet(this.bigBlind);
-        console.log('turn inside NextHand after big blind: ', this.turn)
-
-
         this.betIndex = null;
         this.deck.dealPockets(this.players);
     }
@@ -325,7 +299,6 @@ export class Game{
 
     }
     bet(amount){
-        console.log('calling bet')
         if(this.players[this.turn].bet + amount > this.currentBet){
             this.betIndex = this.turn;
         }
@@ -367,7 +340,6 @@ export class Game{
         this.nextTurn();
     }
     handleNumericalHands(){
-        console.log('handling numerical hands')
         this.turn = null
         this.handComplete = true
         
@@ -407,7 +379,6 @@ export class Game{
                 groupedHands[key] = [hands[i]];
             }
         }
-        console.log('grouped hands: ', groupedHands)
         let handledHands = Object.values(groupedHands).map(group => {
             return group.sort((a, b) => {
                 // Handle null values by placing them at the end
@@ -424,15 +395,13 @@ export class Game{
         });
        
         handledHands.sort((a, b) => b[0].numericalHand - a[0].numericalHand);
-        console.log('handled hands: ', handledHands)
-        //
+
         for(let i = 0; i < handledHands.length; i++){
             if(this.pot > 0){
                 let splitDenom = handledHands[i].length;
-                console.log('handledHands[i]: ', handledHands[i])
                 //determine max win amount. if they're not all in, it's the pot divided by the number of players with the same hand
                 if(handledHands[i].length > 1){
-                    console.log('split!!!@')
+                    //i was console loggin here before
                 }
                 for(let j = 0; j < handledHands[i].length; j++){
                     let maxWin = 0
@@ -444,16 +413,12 @@ export class Game{
                             maxWin += Math.min(this.players[k].moneyInPot, this.players[handledHands[i][j].index].allIn);
                         }
                     }
-                    console.log('current player: ', this.players[handledHands[i][j].index].username)
-                    console.log('max win: ', maxWin)
-                    console.log('they are getting: ', Math.min(this.pot, Math.floor(maxWin / splitDenom)))
                     this.handWinnderInfo.push({player: this.players[handledHands[i][j].index], maxWin: maxWin})
 
                     this.players[handledHands[i][j].index].chips += Math.min(this.pot, Math.floor(maxWin / splitDenom));
                     //take this players share out of the pot
                     this.players[handledHands[i][j].index].moneyInPot = 0;
                     this.pot -= Math.min(this.pot, Math.floor(maxWin / splitDenom));
-                    console.log('pot after subtraction: ', this.pot)
                     splitDenom --;
                     
                 }
@@ -473,7 +438,6 @@ export class Game{
                 // }         
             }
             else{
-                console.log('pot is not greater than 0')
                 if(this.isTest){
                     this.nextHandNoShuffle();
                     return

@@ -77,7 +77,6 @@ describe.skip('Game', () => {
         game.bet(0) //2
         //pot sqaure
         //round 1
-        console.log(' round 1 flop', game.flop)
         expect(game.round).toBe(1)
         expect(game.betIndex).toBe(null)
         expect(game.currentBet).toBe(0)

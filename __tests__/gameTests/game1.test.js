@@ -166,7 +166,6 @@ describe.skip('Game', () => {
         players[3].numericalHand = 80
         players[4].numericalHand = 55
 
-        console.log('player 0 pocket', game.players[0].pocket)
 
         //round 2 betting
         expect(game.round).toBe(2)
@@ -176,13 +175,9 @@ describe.skip('Game', () => {
         
         game.bet(250) //0
         expect(game.round).toBe(3)
-        console.log('player 4 chips', game.players[4].chips)
-        // game.handleNumericalHands()
-        //hand 2 round 0 dealer 1
-        
+
         //next hand
         game.nextHand()
-        console.log('game at end of test 1', game)
         betSum = 0
         chipsSum = 0
         expect(game.players.length).toBe(3)

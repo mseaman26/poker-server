@@ -16,7 +16,6 @@ function hasDuplicates(array) {
 
 describe('Game', () => {
     test.skip('should return a new game', () => {
-        console.log('come on')
         const game = new Game()
         expect(game).toBeInstanceOf(Game)
 
@@ -28,7 +27,6 @@ describe('Game', () => {
     })
 
     test('makes sure nextRound behaves properly when round advances due fold', () => {
-        console.log('for fucks sake')
         let players = [
             {
                 id: 0,
@@ -69,18 +67,12 @@ describe('Game', () => {
         expect(game.round).toBe(0)
         expect(game.dealer).toBe(1)
         expect(game.turn).toBe(1)
-        console.log('players in test:   ',game.players)
-        console.log('folded count',game.foldedCount)
-        console.log('current bet in test:   ',game.currentBet)
         expect(game.players[2].moneyInPot).toBe(50)
-        
-        console.log('next hand call count',game.nextHandCallCount)
         expect(game.currentBet).toBe(100)
 
     })
 
     test('makes sure nextRound behaves properly when round advances due to square pot', () => {
-        console.log('for fucks sake')
         let players = [
             {
                 id: 0,
@@ -131,7 +123,6 @@ describe('Game', () => {
 
     })
     test('makes sure nextRound behaves properly when round advances due all In', () => {
-        console.log('for fucks sake')
         let players = [
             {
                 id: 0,
@@ -165,23 +156,7 @@ describe('Game', () => {
         expect(game.players[1].allIn).toBe(300)
         game.bet(100)//2  all in
         expect(game.round).toBe(0)
-        console.log('game at end',game)
         game.bet(100) //0  200 -> 300  pot square
-        console.log('game at end of all in test: ',game)
-        // expect(game.round).toBe(0)
-        // expect(game.round).toBe(1)
-        // game.bet(150)
-        // expect(game.round).toBe(1)
-        // //round1
-        // game.bet(500) //1
-        // expect(game.players[1].allIn).toBe(500)
-        // game.bet(500)  //2
-        // expect(game.players[2].allIn).toBe(500)
-        // expect(game.round).toBe(1)
-        // game.bet(70) //0
-        // console.log('next hand call count',game.nextHandCallCount)
-        // // expect(game.round).toBe(0)
-        // // expect(game.players[0].chips).toBe(3000)
    
 
     })

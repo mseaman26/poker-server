@@ -3,7 +3,6 @@ import {Game} from '../../handlers/Game.js'
 
 describe('Game', () => {
     test('should return a new game', () => {
-        console.log('jest not consol logging')
         const game = new Game()
         expect(game).toBeInstanceOf(Game)
     })
@@ -103,23 +102,15 @@ describe('Game', () => {
             // }
         ]
         const game = new Game(1, players, 0, 100, 10000)
-        // game.deck.shuffleDeck()
-        // game.deck.shuffleDeck()
-        // game.deck.shuffleDeck()
-        // console.log('!!',game.deck.deck)
 
 
         game.deck.deck = fixedDeck
 
 
         game.startGameNoShuffle()
-        console.log('game: ', game)
 
         expect(game.players[0].pocket).toEqual([ { value: 2, suit: 'clubs' }, { value: 7, suit: 'clubs' } ])
         expect(game.players[1].pocket).toEqual([{ value: 7, suit: 'spades' }, { value: 8, suit: 'diamonds' }])
-        // for(let i = 0; i < game.players.length; i++){
-        //     console.log('!!',game.players[i].pocket, ', player ', i)
-        // }
         expect(game.pot).toBe(150)
         expect(game.dealer).toBe(0)
         expect(game.turn).toBe(3)
@@ -151,7 +142,5 @@ describe('Game', () => {
         game.bet(0)//0
         expect(game.round).toBe(3)
         //round 3
-        console.log('!!',game.flop)
-        console.log(game) 
     })
 })

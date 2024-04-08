@@ -16,7 +16,6 @@ function hasDuplicates(array) {
 
 describe('Game', () => {
     test.skip('should return a new game', () => {
-        console.log('come on')
         const game = new Game()
         expect(game).toBeInstanceOf(Game)
 
@@ -28,7 +27,6 @@ describe('Game', () => {
     })
 
     test('makes sure nextRound behaves properly when round advances due fold', () => {
-        console.log('for fucks sake')
         let players = [
             {
                 id: 0,
@@ -64,7 +62,6 @@ describe('Game', () => {
         game.nextFlip()
         expect(game.round).toBe(3)
         game.nextHand()
-        console.log('player 1 chips', game.players[0].chips)
 
 
 

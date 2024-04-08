@@ -16,7 +16,6 @@ function hasDuplicates(array) {
 
 describe('Game', () => {
     test('should return a new game', () => {
-        console.log('come on')
         const game = new Game()
         expect(game).toBeInstanceOf(Game)
 
@@ -28,7 +27,6 @@ describe('Game', () => {
     })
 
     test('checks for deck length consistency and no duplicates', () => {
-        console.log('for fucks sake')
         let players = [
             {
                 id: 0,
@@ -105,7 +103,6 @@ describe('Game', () => {
 
     })
     test('checks with a 5 player game for deck length consistency and no duplicates', () => {
-        console.log('for fucks sake')
         let players = [
             {
                 id: 0,

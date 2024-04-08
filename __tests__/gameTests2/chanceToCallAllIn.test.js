@@ -16,7 +16,6 @@ function hasDuplicates(array) {
 
 describe('Game', () => {
     test.skip('should return a new game', () => {
-        console.log('come on')
         const game = new Game()
         expect(game).toBeInstanceOf(Game)
 
@@ -28,7 +27,6 @@ describe('Game', () => {
     })
 
     test('makes sure nextRound behaves properly when round advances due fold', () => {
-        console.log('for fucks sake')
         let players = [
             {
                 id: 0,
@@ -69,18 +67,12 @@ describe('Game', () => {
         expect(game.round).toBe(0)
         expect(game.dealer).toBe(1)
         expect(game.turn).toBe(1)
-        console.log('players in test:   ',game.players)
-        console.log('folded count',game.foldedCount)
-        console.log('current bet in test:   ',game.currentBet)
         expect(game.players[2].moneyInPot).toBe(50)
-        
-        console.log('next hand call count',game.nextHandCallCount)
         expect(game.currentBet).toBe(100)
 
     })
 
     test('makes sure nextRound behaves properly when round advances due to square pot', () => {
-        console.log('for fucks sake')
         let players = [
             {
                 id: 0,
@@ -164,13 +156,9 @@ describe('Game', () => {
         game.fold()//0
         expect(game.round).toBe(0)
         expect(game.turn).toBe(0)
-        
-        console.log('player 0 chips',game.players[0].chips)
-        console.log('player 1 chips',game.players[1].chips)
         //chips after blinds
         expect(game.players[0].chips).toBe(350) //small blinds
         expect(game.players[1].chips).toBe(1500) //big blinds
-        console.log('game: ',game)
         expect(game.checktotals()).toBe(true)
         expect(game.turn).toBe(0)
         //round 0

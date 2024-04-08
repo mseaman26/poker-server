@@ -93,8 +93,5 @@ describe('everyone all in', () => {
         expect(game.round).toBe(3)
         expect(game.flop.length).toBe(5)
         game.nextFlip();
-        console.log('player 0 chips: ', game.players[0].chips)
-        console.log('player 1 chips: ', game.players[1].chips)
-        console.log('player 2 chips: ', game.players[2].chips)
     })
 })

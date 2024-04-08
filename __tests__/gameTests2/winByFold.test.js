@@ -13,7 +13,6 @@ describe('win by fold', () => {
             },
         ]
         let game = new Game(1, players, 0, 100, 1000)
-        console.log('game deck',game.deck.deck)
         // game.isTest = true
         game.startGame()
         expect(game.turn).toBe(1)
@@ -148,7 +147,6 @@ describe('win by fold', () => {
         //game 2 hand 2
 
         expect(game.round).toBe(0)
-        console.log('player 1 pcket derp', game.players[1].pocket)
         expect(game.turn).toBe(1)
         expect(game.players[0].chips).toBe(300)
         expect(game.players[1].chips).toBe(2200)
@@ -168,29 +166,7 @@ describe('win by fold', () => {
         
         game.nextFlip()
         expect(game.round).toBe(3)
-        console.log('player 0 pocket: ', game.players[0].pocket)
-        console.log('player 1 pocket: ', game.players[1].pocket)
-        console.log('player 2 pocket: ', game.players[2].pocket)
-        console.log('flop: ', game.flop)
-
-        
         game.nextFlip()
-        console.log('player 0 pocket: ', game.players[0].pocket)
-        
-        
-        console.log('player 0 chips: ', game.players[0].chips)
-        console.log('player 0 hand: ', game.players[0].actualHand.title)
-        console.log('player 0 pocket: ', game.players[0].pocket)
-        console.log('player 1 chips: ', game.players[1].chips)
-        console.log('player 1 pocket: ', game.players[1].pocket)
-        console.log('player 2 chips: ', game.players[2].chips)
-        console.log('flop: ', game.flop)
-        console.log('player 2 pocket: ', game.players[2].pocket)
-        console.log('player 2 hand: ', game.players[2].actualHand.title)
-        
-        console.log('game round: ', game.round)
-        console.log('game flip cards: ', game.flipCards)
-        console.log('game pot: ', game.pot)
         
         game.nextHand()
        

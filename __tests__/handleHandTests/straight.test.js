@@ -138,7 +138,6 @@ describe("handleHands", () => {
     ];
     currentHandHandler.hand = hand;
     result = currentHandHandler.hasStraights();
-    console.log(result)
     expect(result).toEqual([
       [
         { value: 3, suit: "clubs" },

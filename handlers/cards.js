@@ -63,5 +63,3 @@ const cards = [
     }
     return deck;
   }
-  console.log(shuffleDeck(cards))
-  console.log(shuffleDeck(cards).length)

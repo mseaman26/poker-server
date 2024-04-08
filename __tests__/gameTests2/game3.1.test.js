@@ -53,7 +53,6 @@ describe('Game', () => {
         //round 2
         expect(game.turn).toBe(1)
         game.bet(200) //1
-        console.log('current bet: ', game.currentBet)
         game.bet(203) //0
         expect(game.round).toBe(2)
         game.bet(3)  //1
@@ -68,7 +67,6 @@ describe('Game', () => {
         expect(game.checktotals()).toBe(true)
         expect(game.players[0].chips).toBe(322) //small blinds
         expect(game.players[1].chips).toBe(1528) //big blinds
-        console.log('players at beginning of hand: ', game.players)
         expect(game.round).toBe(0)
         expect(game.dealer).toBe(1)
         expect(game.turn).toBe(0)
@@ -92,8 +90,6 @@ describe('Game', () => {
         // expect(game.players[0].moneyInPot).toBe(200)
         expect(game.pot).toBe(400)
         game.bet(0) //1
-       
-        console.log('players at end of hand: ', game.players)
 
         expect(game.round).toBe(0)
         expect(game.checktotals()).toBe(true)
@@ -134,16 +130,8 @@ describe('Game', () => {
         game.bet(0) //1
         expect(game.round).toBe(3)
         game.bet(0) //0
-        console.log('gameksjhdf', game)
         // // //next hand
-        //expect(game.checktotals()).toBe(true)
-        // console.log('final flop: ', game.flop)
-        // console.log('player 0 pocket: ', game.players[0].pocket)
         expect(game.players.length).toBe(2)
-        // expect(game.dealer).toBe(1)
         expect(game.players[1].chips).toBe(1898)  //had two chips, but is small blind 
-        // expect(game.players[1].chips).toBe(1898)
-        // expect(game.round).toBe(0)
-
     })
 })
