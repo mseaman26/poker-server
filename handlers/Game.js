@@ -55,9 +55,15 @@ export class Game{
             this.players[i].folded = false;
             this.players[i].moneyInPot = 0;
             this.players[i].numericalHand = null;
+            this.players[i].action = ''
+            this.players[i].actionAmount = 0
         }
         this.bet(Math.floor(this.bigBlind / 2));
+        this.players[(this.turn + this.players.length - 1) % this.players.length].action = ''
+        this.players[(this.turn + this.players.length - 1) % this.players.length].actionAmount = 0
         this.bet(Math.floor(this.bigBlind));
+        this.players[(this.turn + this.players.length - 1) % this.players.length].action = ''
+        this.players[(this.turn + this.players.length - 1) % this.players.length].actionAmount = 0
         this.betIndex = null;
         this.deck.dealPockets(this.players);
     }
@@ -175,6 +181,8 @@ export class Game{
         this.currentBet = 0;
         for(let i = 0; i < this.players.length; i++){
             this.players[i].bet = 0;
+            this.players[i].action = ''
+            this.players[i].actionAmount = 0
         }
         
         this.betIndex = null;
@@ -233,6 +241,8 @@ export class Game{
             if(this.players[i].chips <= 0 && this.players[i].eliminated === false){
                 this.players[i].pocket = []
                 this.players[i].eliminated = true;
+                this.players[i].action = ''
+                this.players[i].actionAmount = 0
                 this.eliminatedCount++
             }
             this.players[i].isWinner = false;
@@ -301,6 +311,22 @@ export class Game{
     bet(amount){
         if(this.players[this.turn].bet + amount > this.currentBet){
             this.betIndex = this.turn;
+            if(this.currentBet === 0){
+                this.players[this.turn].action = 'bet'
+                this.players[this.turn].actionAmount = amount + this.players[this.turn].bet      
+            }else{
+                this.players[this.turn].action = 'raise'
+                this.players[this.turn].actionAmount = amount + this.players[this.turn].bet - 
+                    this.currentBet
+            }
+        }else{
+            if(this.currentBet === 0){
+                this.players[this.turn].action = 'check'
+                this.players[this.turn].actionAmount = 0 
+            }else{
+                this.players[this.turn].action = 'call'
+                this.players[this.turn].actionAmount = amount
+            }
         }
         if(this.betIndex === null){
             this.betIndex = this.turn;
@@ -336,6 +362,8 @@ export class Game{
     }
     fold(){
         this.players[this.turn].folded = true;
+        this.players[this.turn].action = 'fold'
+        this.players[this.turn].actionAmount = 0
         this.foldedCount += 1;
         this.nextTurn();
     }
