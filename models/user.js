@@ -32,6 +32,9 @@ const userSchema = new Schema(
       type: [ObjectId],
       ref: 'Game',
       default: []
+    },
+    firebaseId: { 
+      type: String,
     }
 
   },
