@@ -43,7 +43,6 @@ const activeUsers = new Map()
 const userToSocketId = new Map()
 
 io.on("connection", (socket) =>   {
-  console.log(`User Connected: ${socket.id}`);
 
   socket.on('activate user', (data) => {
     if(!activeUsers.has(data.id)){
@@ -90,7 +89,6 @@ io.on("connection", (socket) =>   {
   handleGameEvents(io, socket);
 
   socket.on('disconnect', () => {
-    console.log('user disconnected: ',socket.id)
     activeUsers.delete(socket.id)
     io.emit('active users', Array.from(activeUsers.values()))
   })
