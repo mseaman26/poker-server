@@ -293,6 +293,10 @@ export class Game{
         this.bet(this.bigBlind);
         this.betIndex = null;
         this.deck.dealPockets(this.players);
+
+        for(let i = 0; i < this.players.length; i++){
+            this.players[i].action = ''
+        }
     }
     checktotals(){
         let moneyInPotSum = 0
