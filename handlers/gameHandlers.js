@@ -61,6 +61,10 @@ export function handleGameEvents (io, socket){
     });
     socket.on('next hand', (data) => {
         activeGames.get(data.roomId).nextHand();
+        io.to(data.roomId).emit('deal');
+        // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+    })
+    socket.on('done dealing', (data) => {
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('end game', (roomId) => {
