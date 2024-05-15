@@ -30,13 +30,40 @@ export function handleGameEvents (io, socket){
     socket.on('bet', (data) => {
         let game = activeGames.get(data.roomId);
         game.bet(data.amount);
-        
+        if(game.flopping){
+            io.to(data.roomId).emit('flopping', game.flop);
+            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        }
+        if(game.turning){
+            io.to(data.roomId).emit('turning', game.flop[3]);
+            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        }
+        if(game.rivering){
+            io.to(data.roomId).emit('rivering', game.flop[4]);
+            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        }
         if(game.flipCards){
+            console.log('flip cards')
             socket.to(data.roomId).emit('flip cards', game);
         }else{
             io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }
        
+    })
+    socket.on('done flopping', (data) => {
+        let game = activeGames.get(data.roomId);
+        game.flopping = false;
+        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+    })
+    socket.on('done turning', (data) => {
+        let game = activeGames.get(data.roomId);
+        game.turning = false;
+        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+    })
+    socket.on('done rivering', (data) => {
+        let game = activeGames.get(data.roomId);
+        game.rivering = false;
+        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('fold', (data) => {
         let game = activeGames.get(data.roomId);
@@ -50,6 +77,7 @@ export function handleGameEvents (io, socket){
     socket.on('next flip', (data) => {
         let game = activeGames.get(data.roomId);
         game.nextFlip();
+
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         if(game.flipCards){
             socket.to(data.roomId).emit('flip cards', game);

@@ -35,6 +35,9 @@ export class Game{
         this.flipCards = false
         this.handComplete = false
         this.handWinnderInfo = []
+        this.flopping = false
+        this.turning = false
+        this.rivering = false
     }
 
     startGame(){
@@ -158,13 +161,16 @@ export class Game{
             return
         }
         if(this.round === 0){
+            this.flopping = true
             this.flop = this.deck.dealFlop();
         }
         
         else if(this.round === 1){
+            this.turning = true
             this.flop.push(this.deck.dealCard());
         }
         else if(this.round === 2){
+            this.rivering = true
             this.flop.push(this.deck.dealCard());
             //attaching the hand info to send to the front end
             for(let i = 0; i < this.players.length; i++){
