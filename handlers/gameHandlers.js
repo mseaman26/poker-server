@@ -29,23 +29,27 @@ export function handleGameEvents (io, socket){
 
     socket.on('bet', (data) => {
         let game = activeGames.get(data.roomId);
+
         game.bet(data.amount);
-        if(game.flopping){
-            io.to(data.roomId).emit('flopping', game.flop);
-            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
-        }
-        if(game.turning){
-            io.to(data.roomId).emit('turning', game.flop[3]);
-            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
-        }
-        if(game.rivering){
-            io.to(data.roomId).emit('rivering', game.flop[4]);
-            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
-        }
+        
         if(game.flipCards){
-            console.log('flip cards')
-            socket.to(data.roomId).emit('flip cards', game);
-        }else{
+            console.log('flip cards being emitted from server')
+            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+            io.to(data.roomId).emit('flip cards', game);
+        }
+        else if(game.flopping){
+            io.to(data.roomId).emit('flopping', game);
+            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        }
+        else if(game.turning){
+            io.to(data.roomId).emit('turning', game);
+            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        }
+        else if(game.rivering){
+            io.to(data.roomId).emit('rivering', game);
+            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        }
+        else{
             io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }
        
@@ -68,6 +72,10 @@ export function handleGameEvents (io, socket){
     socket.on('fold', (data) => {
         let game = activeGames.get(data.roomId);
         game.fold();
+        if(game.dealing){
+            io.to(data.roomId).emit('deal');
+            game.dealing = false;
+        }
         if(game.flipCards){
             socket.to(data.roomId).emit('flip cards', game);
         }else{
@@ -77,10 +85,11 @@ export function handleGameEvents (io, socket){
     socket.on('next flip', (data) => {
         let game = activeGames.get(data.roomId);
         game.nextFlip();
-
+        console.log('next flip received from client')
+        console.log('game round', game.round)
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         if(game.flipCards){
-            socket.to(data.roomId).emit('flip cards', game);
+            io.to(data.roomId).emit('flip cards', game);
         }
     })
     socket.on('all in', (data) => {

@@ -38,6 +38,7 @@ export class Game{
         this.flopping = false
         this.turning = false
         this.rivering = false
+        this.dealing = false
     }
 
     startGame(){
@@ -75,6 +76,7 @@ export class Game{
         
        if(this.foldedCount + this.eliminatedCount === this.players.length - 1){
             //win by fold
+            this.dealing = true
             for(let i = 0; i < this.players.length; i++){
                 //setting every players possible max win amount
                 if(this.players[i].allIn !== null){
@@ -101,11 +103,14 @@ export class Game{
                 
             }
             this.nextHand()
+           
+
             // this.handleNumericalHands();
             return
         }
         else if(this.allInCount + this.foldedCount + this.eliminatedCount >= this.players.length -1 && this.currentBet === 0 && this.players.length > 1){
             //flip cards
+            console.log('flip cards in game object')
             for(let i = 0; i < this.players.length; i++){
                 if(this.players[i].allIn !== null){
                     let newMax = 0
