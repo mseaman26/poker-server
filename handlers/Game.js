@@ -123,6 +123,9 @@ export class Game{
             // for(let i = 0; i < this.players.length; i++){
             //     this.players[i].moneyInPot = 0;
             // }
+            while(this.flop.length < 5){
+                this.flop.push(this.deck.dealCard());
+            }
             this.turn = null
             this.flipCards = true
 

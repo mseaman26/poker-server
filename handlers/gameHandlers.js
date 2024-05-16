@@ -34,7 +34,7 @@ export function handleGameEvents (io, socket){
         
         if(game.flipCards){
             console.log('flip cards being emitted from server')
-            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+            // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
             io.to(data.roomId).emit('flip cards', game);
         }
         else if(game.flopping){
@@ -57,6 +57,16 @@ export function handleGameEvents (io, socket){
     socket.on('done flopping', (data) => {
         let game = activeGames.get(data.roomId);
         game.flopping = false;
+        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+    })
+    socket.on('done flipping', (data) => {
+        let game = activeGames.get(data.roomId);
+        game.flipCards = false;
+        for(let i = 0; i < game.players.length; i++){
+            game.handHandler.hand = [...game.players[i].pocket.concat(game.flop)];
+            game.players[i].actualHand = game.handHandler.findHand();
+        }
+        game.handleNumericalHands();
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('done turning', (data) => {
