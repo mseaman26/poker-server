@@ -126,6 +126,7 @@ export class Game{
             while(this.flop.length < 5){
                 this.flop.push(this.deck.dealCard());
             }
+            console.log('flop within game object after flip cards', this.flop)
             this.turn = null
             this.flipCards = true
 
@@ -165,6 +166,9 @@ export class Game{
     nextRound(){
         if(this.allInCount + this.foldedCount === this.players.length - 1){
             this.turn = null
+            while(this.flop.length < 5){
+                this.flop.push(this.deck.dealCard());
+            }
             this.flipCards = true
             return
         }
@@ -280,6 +284,11 @@ export class Game{
             this.players[i].moneyInPot = 0;
             this.players[i].maxWin = null;
             this.players[i].folded = false;
+            this.players[i].action = ''
+            this.players[i].actionAmount = 0
+            this.players[i].numericalHand = null;
+            this.players[i].isWinner = false;
+            this.players[i].actualHand = null;
         }
         //user newdealerindex to set the new dealer
         // this.dealer = newDealerIndex % this.players.length;
@@ -373,6 +382,9 @@ export class Game{
             this.players[this.turn].bet += amount;
         }
         if(this.foldedCount + this.allInCount === this.players.length){
+            while(this.flop.length < 5){
+                this.flop.push(this.deck.dealCard());
+            }
             this.flipCards = true
             
         }

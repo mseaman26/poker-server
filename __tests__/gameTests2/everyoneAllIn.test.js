@@ -86,12 +86,11 @@ describe('everyone all in', () => {
         expect(game.players[0].allIn).toBe(1000)
         expect(game.players[1].allIn).toBe(1000)
         expect(game.players[2].allIn).toBe(1000)
-        game.nextFlip();
-        expect(game.round).toBe(2)
-        expect(game.flop.length).toBe(4)
-        game.nextFlip();
-        expect(game.round).toBe(3)
+        expect(game.round).toBe(1)
         expect(game.flop.length).toBe(5)
-        game.nextFlip();
+
+        // expect(game.round).toBe(3)
+        // expect(game.flop.length).toBe(5)
+        // game.nextFlip();
     })
 })
