@@ -34,7 +34,7 @@ export class Game{
         this.nextHandNoShuffleCallCount = 0;
         this.flipCards = false
         this.handComplete = false
-        this.handWinnderInfo = []
+        this.handWinnerInfo = []
         this.flopping = false
         this.turning = false
         this.rivering = false
@@ -247,7 +247,7 @@ export class Game{
         this.deck.shuffleDeck();
         this.deck.shuffleDeck();
         this.flop = [];
-        this.handWinnderInfo = []
+        this.handWinnerInfo = []
 
         while(true){
             this.dealer = (this.dealer + 1) % this.players.length;
@@ -471,7 +471,7 @@ export class Game{
                             maxWin += Math.min(this.players[k].moneyInPot, this.players[handledHands[i][j].index].allIn);
                         }
                     }
-                    this.handWinnderInfo.push({player: this.players[handledHands[i][j].index], maxWin: maxWin})
+                    this.handWinnerInfo.push({player: this.players[handledHands[i][j].index], maxWin: maxWin})
 
                     this.players[handledHands[i][j].index].chips += Math.min(this.pot, Math.floor(maxWin / splitDenom));
                     //take this players share out of the pot
