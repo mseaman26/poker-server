@@ -116,7 +116,7 @@ export function handleGameEvents (io, socket){
     })
     socket.on('end game', (roomId) => {
         activeGames.delete(roomId);
-
+        io.to(roomId).emit('end game', {});
         io.to(roomId).emit('game state', {});
     });
 
