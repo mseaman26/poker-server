@@ -358,15 +358,9 @@ export class Game{
         if(this.betIndex === null){
             this.betIndex = this.turn;
         }
-        // if((amount <= this.players[this.turn].chips)){
-            this.currentBet = Math.max(amount + this.players[this.turn].bet, this.currentBet);
-            // this.players[this.turn].allIn = amount + this.players[this.turn].bet;
-        // }
-        // else{
-            
-            // this.currentBet = Math.min(this.players[this.turn].chips, this.currentBet); 
-            // this.currentBet = this.players[this.turn].chips + this.players[this.turn].bet; 
-        // }
+
+        this.currentBet = Math.max(amount + this.players[this.turn].bet, this.currentBet);
+
         this.pot += Math.min(amount, this.players[this.turn].chips);
         if(this.players[this.turn].chips <= amount){
             this.players[this.turn].allIn = this.players[this.turn].chips + this.players[this.turn].moneyInPot;
@@ -381,6 +375,17 @@ export class Game{
             this.players[this.turn].moneyInPot += amount;
             this.players[this.turn].bet += amount;
         }
+        for(let i = 0; i < this.players.length; i++){
+            //setting every players possible max win amount
+            if(this.players[i].allIn !== null){
+                let newMax = 0
+                for(let j = 0; j < this.players.length; j++){
+                    newMax += Math.min(this.players[j].moneyInPot, this.players[i].allIn);
+                }
+                this.players[i].maxWin = newMax;
+            }
+        }
+        //flip cards
         if(this.foldedCount + this.allInCount === this.players.length){
             while(this.flop.length < 5){
                 this.flop.push(this.deck.dealCard());
