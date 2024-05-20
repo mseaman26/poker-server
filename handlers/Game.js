@@ -112,14 +112,15 @@ export class Game{
             //flip cards
             console.log('flip cards in game object')
             for(let i = 0; i < this.players.length; i++){
+                //setting every players possible max win amount
                 if(this.players[i].allIn !== null){
                     let newMax = 0
                     for(let j = 0; j < this.players.length; j++){
-                        newMax += Math.min(this.players[j].bet, this.players[i].allIn);
+                        newMax += Math.min(this.players[j].moneyInPot, this.players[i].allIn);
                     }
                     this.players[i].maxWin = newMax;
                 }
-            } 
+            }
             // for(let i = 0; i < this.players.length; i++){
             //     this.players[i].moneyInPot = 0;
             // }
@@ -387,6 +388,16 @@ export class Game{
         }
         //flip cards
         if(this.foldedCount + this.allInCount === this.players.length){
+            for(let i = 0; i < this.players.length; i++){
+                //setting every players possible max win amount
+                if(this.players[i].allIn !== null){
+                    let newMax = 0
+                    for(let j = 0; j < this.players.length; j++){
+                        newMax += Math.min(this.players[j].moneyInPot, this.players[i].allIn);
+                    }
+                    this.players[i].maxWin = newMax;
+                }
+            }
             while(this.flop.length < 5){
                 this.flop.push(this.deck.dealCard());
             }

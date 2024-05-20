@@ -34,7 +34,7 @@ export function handleGameEvents (io, socket){
         
         if(game.flipCards){
             console.log('flip cards being emitted from server')
-            // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+            //io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
             io.to(data.roomId).emit('flip cards', game);
         }
         else if(game.flopping){
