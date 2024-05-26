@@ -29,7 +29,7 @@ export function handleGameEvents (io, socket){
 
     socket.on('bet', (data) => {
         let game = activeGames.get(data.roomId);
-
+        io.to(data.roomId).emit('room id test', data.roomId);
         game.bet(data.amount);
         
         if(game.flipCards){
@@ -82,9 +82,10 @@ export function handleGameEvents (io, socket){
     socket.on('fold', (data) => {
         let game = activeGames.get(data.roomId);
         game.fold();
-        if(game.dealing){
-            io.to(data.roomId).emit('deal');
-            game.dealing = false;
+        if(game.winByFold){
+            io.to(data.roomId).emit('win by fold');
+            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+            game.winByFold = false;
         }
         if(game.flipCards){
             socket.to(data.roomId).emit('flip cards', game);

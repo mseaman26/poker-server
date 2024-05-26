@@ -39,10 +39,12 @@ export class Game{
         this.turning = false
         this.rivering = false
         this.dealing = false
+        this.winByFold = false
     }
 
     startGame(){
         this.handComplete = false
+        this.winByFold = false
         this.deck.shuffleDeck();
         this.deck.shuffleDeck();
         this.deck.shuffleDeck();
@@ -76,7 +78,8 @@ export class Game{
         
        if(this.foldedCount + this.eliminatedCount === this.players.length - 1){
             //win by fold
-            this.dealing = true
+            this.winByFold = true
+            this.handComplete = true
             for(let i = 0; i < this.players.length; i++){
                 //setting every players possible max win amount
                 if(this.players[i].allIn !== null){
@@ -102,7 +105,7 @@ export class Game{
                 }
                 
             }
-            this.nextHand()
+            // this.nextHand()
            
 
             // this.handleNumericalHands();
@@ -241,6 +244,7 @@ export class Game{
     }
     nextHand(){
         this.handComplete = false
+        this.winByFold = false
         this.nextHandCallCount++
         this.deck.deck = []
         this.deck.createDeck();
