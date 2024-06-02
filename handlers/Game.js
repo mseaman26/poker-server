@@ -91,6 +91,7 @@ export class Game{
                 }
                 if(this.players[i].folded === false){
                     //give money to winner by fold
+                    this.handWinnerInfo.push({player: this.players[i]})
                     this.players[i].chips += this.pot;
                     this.pot = 0;
                     if(this.isTest){
