@@ -87,9 +87,23 @@ export function handleGameEvents (io, socket){
             io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
             game.winByFold = false;
         }
-        if(game.flipCards){
-            socket.to(data.roomId).emit('flip cards', game);
-        }else{
+        else if(game.flipCards){
+            console.log('flip cards has been set to true')
+            io.to(data.roomId).emit('flip cards', game);
+        }
+        else if(game.flopping){
+            io.to(data.roomId).emit('flopping', game);
+            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        }
+        else if(game.turning){
+            io.to(data.roomId).emit('turning', game);
+            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        }
+        else if(game.rivering){
+            io.to(data.roomId).emit('rivering', game);
+            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        }
+        else{
             io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }
     })
