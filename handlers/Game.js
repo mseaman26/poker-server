@@ -85,7 +85,7 @@ export class Game{
                 if(this.players[i].allIn !== null){
                     let newMax = 0
                     for(let j = 0; j < this.players.length; j++){
-                        newMax += Math.min(this.players[j].bet, this.players[i].allIn);
+                        newMax += Math.min(this.players[j].moneyInPot, this.players[i].allIn);
                     }
                     this.players[i].maxWin = newMax;
                 }
@@ -146,7 +146,7 @@ export class Game{
                     if(this.players[i].allIn !== null){
                         let newMax = 0
                         for(let j = 0; j < this.players.length; j++){
-                            newMax += Math.min(this.players[j].bet, this.players[i].allIn);
+                            newMax += Math.min(this.players[j].moneyInPot, this.players[i].allIn);
                         }
                         this.players[i].maxWin = newMax;
                     }
