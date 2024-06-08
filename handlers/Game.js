@@ -89,7 +89,7 @@ export class Game{
                     }
                     this.players[i].maxWin = newMax;
                 }
-                if(this.players[i].folded === false){
+                if(this.players[i].folded === false && this.players[i].eliminated === false){
                     //give money to winner by fold
                     this.handWinnerInfo.push({player: this.players[i]})
                     this.players[i].chips += this.pot;

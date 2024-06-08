@@ -43,6 +43,7 @@ describe('Game', () => {
         expect(game.turn).toBe(1)
         expect(game.dealer).toBe(0)
         game.fold()
+        game.nextHand()
         expect(game.dealer).toBe(1)
         expect(game.turn).toBe(0)
         expect(game.currentBet).toBe(100)

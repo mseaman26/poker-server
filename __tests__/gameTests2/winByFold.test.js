@@ -29,6 +29,7 @@ describe('win by fold', () => {
         game.bet(100) //1
         game.fold() //0
         //hand 2
+        game.nextHand()
         expect(game.checktotals()).toBe(true)
         expect(game.round).toBe(0)
         expect(game.players[0].chips).toBe(350)
@@ -46,6 +47,7 @@ describe('win by fold', () => {
         expect(game.turn).toBe(0)
         game.bet(200) // 0
         game.fold() // 1
+        game.nextHand()
         expect(game.round).toBe(0)
         expect(game.players[0].chips).toBe(500)
     })

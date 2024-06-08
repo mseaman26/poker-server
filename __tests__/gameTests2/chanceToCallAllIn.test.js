@@ -64,6 +64,7 @@ describe('Game', () => {
         expect(game.round).toBe(2)
         expect(game.turn).toBe(0)
         game.fold() //0
+        game.nextHand()
         expect(game.round).toBe(0)
         expect(game.dealer).toBe(1)
         expect(game.turn).toBe(1)
@@ -154,6 +155,7 @@ describe('Game', () => {
         game.bet(1)//1
         expect(game.round).toBe(2)
         game.fold()//0
+        game.nextHand()
         expect(game.round).toBe(0)
         expect(game.turn).toBe(0)
         //chips after blinds
