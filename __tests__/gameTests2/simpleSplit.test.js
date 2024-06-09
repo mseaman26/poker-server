@@ -201,6 +201,7 @@ describe('everyone has copies of the same card for all their cards', () => {
         game.nextFlip()
         expect(game.round).toBe(3)
         expect(game.pot).toBe(1550)
+
         game.nextFlip()
         expect(game.round).toBe(0)
         expect(game.players[0].chips).toBe(450)

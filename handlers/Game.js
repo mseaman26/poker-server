@@ -271,18 +271,7 @@ export class Game{
             }
             this.players[i].isWinner = false;
         }
-        //set maxBet to second Highest chip holder's chip amount
-        let secondHighest = 0
-        let highest = 0
-        for(let i = 0; i < this.players.length; i++){
-            if(this.players[i].chips > highest){
-                secondHighest = highest
-                highest = this.players[i].chips
-            }else if(this.players[i].chips > secondHighest){
-                secondHighest = this.players[i].chips
-            }
-        }
-        this.maxBet = secondHighest
+        
         // this.players = this.players.filter(player => player.chips > 0);
         for(let i = 0; i < this.players.length; i++){
             this.players[i].bet = 0;
@@ -296,6 +285,21 @@ export class Game{
             this.players[i].isWinner = false;
             this.players[i].actualHand = null;
         }
+        //set maxBet to second Highest chip holder's chip amount
+        let secondHighest = 0
+        let highest = 0
+        for(let i = 0; i < this.players.length; i++){
+            console.log('this.players[i].chips', this.players[i].chips)
+            console.log('folded', this.players[i].folded)
+            console.log('eliminated', this.players[i].eliminated)
+            if(this.players[i].chips > highest && !this.players[i].eliminated && !this.players[i].folded){
+                secondHighest = highest
+                highest = this.players[i].chips
+            }else if(this.players[i].chips > secondHighest && !this.players[i].eliminated && !this.players[i].folded){
+                secondHighest = this.players[i].chips
+            }
+        }
+        this.maxBet = secondHighest
         //user newdealerindex to set the new dealer
         // this.dealer = newDealerIndex % this.players.length;
         this.turn = (this.dealer + 1) % this.players.length;

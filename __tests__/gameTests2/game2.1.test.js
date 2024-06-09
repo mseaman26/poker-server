@@ -119,6 +119,7 @@ describe('Game', () => {
         expect(game.players[2].chips).toBe(1600)
         expect(game.players[3].chips).toBe(900)
         expect(game.players[4].chips).toBe(1000)
+       
         game.deck.deck = [...deck2_1_1]
         expect(game.deck.deck.length).toBe(52)
         game.nextHandNoShuffle()
@@ -164,6 +165,7 @@ describe('Game', () => {
         //nexthand
         expect(game.deck.deck.length).toBe(52)
         //next hand
+        console.log('handWinnerInfo', game.handWinnerInfo)
         game.nextHandNoShuffle()
         expect(game.players[3].chips).toBe(1450)
         expect(game.players[4].chips).toBe(900)

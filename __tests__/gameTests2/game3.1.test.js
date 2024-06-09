@@ -61,6 +61,7 @@ describe('Game', () => {
         //round 3
         game.bet(0) //1
         game.bet(0) //2
+        console.log('handWinnerImnfo', game.handWinnerInfo)
         //next hand
         game.deck.deck = [...deck3_1]
         game.deck.dealPockets(game.players)
