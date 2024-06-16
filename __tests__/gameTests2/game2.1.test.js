@@ -215,6 +215,7 @@ describe('Game', () => {
 
         expect(game.players[0].chips).toBe(400) //big
         expect(game.players[1].chips).toBe(500)
+        console.log('flop length: ',game.flop.length)
         expect(game.players[2].chips).toBe(500)
         expect(game.players[3].chips).toBe(1400)  // Dealer
         expect(game.players[4].chips).toBe(2050) //small
