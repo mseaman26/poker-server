@@ -40,14 +40,18 @@ export class Game{
         this.rivering = false
         this.dealing = false
         this.winByFold = false
+        this.buyBacks = []
     }
 
     startGame(){
         this.handComplete = false
         this.winByFold = false
-        this.deck.shuffleDeck();
-        this.deck.shuffleDeck();
-        this.deck.shuffleDeck();
+        if(!this.isTest){
+            this.deck.shuffleDeck();
+            this.deck.shuffleDeck();
+            this.deck.shuffleDeck();
+        }
+       
 
         
         this.active = true;
@@ -94,14 +98,14 @@ export class Game{
                     this.handWinnerInfo.push({player: this.players[i]})
                     this.players[i].chips += this.pot;
                     this.pot = 0;
-                    if(this.isTest){
-                        this.nextHandNoShuffle();
-                        return
-                    }
-                    if(this.isFrontEndTest){
-                        this.nextHandNoShuffle();
-                        return
-                    }
+                    // if(this.isTest){
+                    //     this.nextHandNoShuffle();
+                    //     return
+                    // }
+                    // if(this.isFrontEndTest){
+                    //     this.nextHandNoShuffle();
+                    //     return
+                    // }
                     // this.nextHand();
                 }
                 
@@ -287,14 +291,23 @@ export class Game{
         this.handComplete = false
         this.winByFold = false
         this.nextHandCallCount++
-        this.deck.deck = []
-        this.deck.createDeck();
-        this.deck.shuffleDeck();
-        this.deck.shuffleDeck();
-        this.deck.shuffleDeck();
+        if(!this.isTest){
+            this.deck.createDeck();
+            this.deck.shuffleDeck();
+            this.deck.shuffleDeck();
+            this.deck.shuffleDeck();
+        }
+        
         this.flop = [];
         this.handWinnerInfo = []
-
+        //handling buybacks
+        for(let i = 0; i < this.buyBacks.length; i++){
+            const playerToAdd = this.buyBacks[i].playerIndex
+            this.players[playerToAdd].eliminated = false;
+            this.eliminatedCount--
+        }
+        this.buyBacks = []
+        //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
         while(true){
             this.dealer = (this.dealer + 1) % this.players.length;
             if(this.players[this.dealer].chips > 0){
@@ -567,28 +580,43 @@ export class Game{
                 // }         
             }
             else{
-                if(this.isTest){
-                    this.nextHandNoShuffle();
-                    return
-                }
-                if(this.isFrontEndTest){
-                    this.nextHandNoShuffle();
-                    return
-                }
+                // if(this.isTest){
+                //     this.nextHandNoShuffle();
+                //     return
+                // }
+                // if(this.isFrontEndTest){
+                //     this.nextHandNoShuffle();
+                //     return
+                // }
                 // this.nextHand();
                 return
             }
         }
-        if(this.isTest){
-            this.nextHandNoShuffle();
-            return
-        }
-        if(this.isFrontEndTest){
-            this.nextHandNoShuffle();
-            return
-        }
+        // if(this.isTest){
+        //     this.nextHandNoShuffle();
+        //     return
+        // }
+        // if(this.isFrontEndTest){
+        //     this.nextHandNoShuffle();
+        //     return
+        // }
     }
+    buyBack(playerIndex, amount){
+        this.players[playerIndex].chips += amount;
+        
+        this.totalChips += amount;
+        this.buyBacks.push({playerIndex, amount})
+
+    }
+
+
+
+
+
+
+    //TEST FUNCTIONS
     startGameNoShuffle(){
+        console.log('no shuffle!')
 
         for(let i = 0; i < this.players.length; i++){
             
@@ -612,6 +640,7 @@ export class Game{
         this.deck.dealPockets(this.players);
     }
     nextHandNoShuffle(){
+        console.log('no shuffle!')
         this.nextHandNoShuffleCallCount++
         //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
         this.turn = (this.dealer + 1) % this.players.length;

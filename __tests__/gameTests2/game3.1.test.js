@@ -63,6 +63,7 @@ describe('Game', () => {
         game.bet(0) //2
         console.log('handWinnerImnfo', game.handWinnerInfo)
         //next hand
+        game.nextHand()
         game.deck.deck = [...deck3_1]
         game.deck.dealPockets(game.players)
         expect(game.checktotals()).toBe(true)
@@ -91,7 +92,7 @@ describe('Game', () => {
         // expect(game.players[0].moneyInPot).toBe(200)
         expect(game.pot).toBe(400)
         game.bet(0) //1
-
+        game.nextHand()
         expect(game.round).toBe(0)
         expect(game.checktotals()).toBe(true)
         expect(game.dealer).toBe(0)
@@ -132,6 +133,7 @@ describe('Game', () => {
         expect(game.round).toBe(3)
         game.bet(0) //0
         // // //next hand
+        game.nextHand()
         expect(game.players.length).toBe(2)
         expect(game.players[1].chips).toBe(1898)  //had two chips, but is small blind 
     })

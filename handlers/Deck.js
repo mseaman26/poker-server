@@ -6,6 +6,7 @@ export class Deck{
         this.createDeck();
     }
         createDeck(){
+            this.deck = [];
             for(let suit of this.suits){
                 for(let value of this.values){
                     this.deck.push({value, suit});

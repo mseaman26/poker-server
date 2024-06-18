@@ -147,7 +147,7 @@ describe('win by fold', () => {
         game.fold() //2
         game.fold() //
         //game 2 hand 2
-
+        game.nextHand()
         expect(game.round).toBe(0)
         expect(game.turn).toBe(1)
         expect(game.players[0].chips).toBe(300)
