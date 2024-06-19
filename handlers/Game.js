@@ -337,6 +337,7 @@ export class Game{
             this.players[i].numericalHand = null;
             this.players[i].isWinner = false;
             this.players[i].actualHand = null;
+            this.players[i].inBuybackQueue = false;
         }
         
         //user newdealerindex to set the new dealer
@@ -603,9 +604,9 @@ export class Game{
     }
     buyBack(playerIndex, amount){
         this.players[playerIndex].chips += amount;
-        
         this.totalChips += amount;
         this.buyBacks.push({playerIndex, amount})
+        this.players[playerIndex].inBuybackQueue = true;
 
     }
 
