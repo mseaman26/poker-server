@@ -78,7 +78,19 @@ export class Game{
         this.deck.dealPockets(this.players);
     }
     nextTurn(){
-
+        let secondHighest = 0
+        let highest = 0
+        for(let i = 0; i < this.players.length; i++){
+            if(this.players[i].chips + this.players[i].bet > highest && !this.players[i].eliminated && !this.players[i].folded){
+                secondHighest = highest
+                highest = this.players[i].chips + this.players[i].bet
+            }else if(this.players[i].chips + this.players[i].bet > secondHighest && !this.players[i].eliminated && !this.players[i].folded){
+                secondHighest = this.players[i].chips + this.players[i].bet
+            }
+        }
+        console.log('second highest: ', secondHighest)
+        console.log('round: ', this.round)
+        this.maxBet = secondHighest
         
        if(this.foldedCount + this.eliminatedCount === this.players.length - 1){
             //win by fold
@@ -367,11 +379,11 @@ export class Game{
         let secondHighest = 0
         let highest = 0
         for(let i = 0; i < this.players.length; i++){
-            if(this.players[i].chips > highest && !this.players[i].eliminated && !this.players[i].folded){
+            if(this.players[i].chips + this.players[i].bet > highest && !this.players[i].eliminated && !this.players[i].folded){
                 secondHighest = highest
-                highest = this.players[i].chips
-            }else if(this.players[i].chips > secondHighest && !this.players[i].eliminated && !this.players[i].folded){
-                secondHighest = this.players[i].chips
+                highest = this.players[i].chips + this.players[i].bet
+            }else if(this.players[i].chips + this.players[i].bet > secondHighest && !this.players[i].eliminated && !this.players[i].folded){
+                secondHighest = this.players[i].chips + this.players[i].bet
             }
         }
         console.log('second highest: ', secondHighest)
