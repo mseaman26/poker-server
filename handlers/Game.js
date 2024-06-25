@@ -41,6 +41,7 @@ export class Game{
         this.dealing = false
         this.winByFold = false
         this.buyBacks = []
+        this.exitingPlayers = []
     }
 
     startGame(){
@@ -319,6 +320,20 @@ export class Game{
             this.eliminatedCount--
         }
         this.buyBacks = []
+        //handling exiting players
+        this.exitingPlayers.sort((a, b) => b - a)  
+        for(let index of this.exitingPlayers){
+            if(this.players[index].eliminated === true){
+                this.eliminatedCount--
+            }
+            this.totalChips -= this.players[index].chips
+            this.players.splice(index, 1)
+        }
+        this.exitingPlayers = []
+        //handling exiting players
+        for(let i = 0; i < this.exitingPlayers.length; i++){
+            const playerToRemove = this.exitingPlayers[i]
+        }
         //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
         while(true){
             this.dealer = (this.dealer + 1) % this.players.length;
@@ -626,6 +641,7 @@ export class Game{
             userId: id,
             username,
         }
+        this.eliminatedCount++
         player.eliminated = true
         player.chips = 0
         player.bet = 0
@@ -639,6 +655,9 @@ export class Game{
         player.inBuybackQueue = false
         player.isWinner = false
         this.players.push(player)
+    }
+    removePlayer(playerIndex){
+        this.exitingPlayers.push(playerIndex)
     }
 
 
