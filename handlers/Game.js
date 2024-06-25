@@ -621,6 +621,25 @@ export class Game{
         this.players[playerIndex].inBuybackQueue = true;
 
     }
+    addPlayer({id, username}){
+        let player = {
+            userId: id,
+            username,
+        }
+        player.eliminated = true
+        player.chips = 0
+        player.bet = 0
+        player.allIn = null
+        player.moneyInPot = 0
+        player.maxWin = null
+        player.folded = false
+        player.numericalHand = null
+        player.pocket = []
+        player.actualHand = null
+        player.inBuybackQueue = false
+        player.isWinner = false
+        this.players.push(player)
+    }
 
 
 
