@@ -139,6 +139,11 @@ export function handleGameEvents (io, socket){
         activeGames.get(data.roomId).addPlayer(data.player);
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
+    socket.on('remove player', (data) => {
+        console.log('remove player event received')
+        activeGames.get(data.roomId).removePlayer(data.playerIndex);
+        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+    })
     socket.on('end game', (roomId) => {
         activeGames.delete(roomId);
         io.to(roomId).emit('end game', {});

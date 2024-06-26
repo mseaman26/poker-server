@@ -313,13 +313,6 @@ export class Game{
         
         this.flop = [];
         this.handWinnerInfo = []
-        //handling buybacks
-        for(let i = 0; i < this.buyBacks.length; i++){
-            const playerToAdd = this.buyBacks[i].playerIndex
-            this.players[playerToAdd].eliminated = false;
-            this.eliminatedCount--
-        }
-        this.buyBacks = []
         //handling exiting players
         this.exitingPlayers.sort((a, b) => b - a)  
         for(let index of this.exitingPlayers){
@@ -330,10 +323,15 @@ export class Game{
             this.players.splice(index, 1)
         }
         this.exitingPlayers = []
-        //handling exiting players
-        for(let i = 0; i < this.exitingPlayers.length; i++){
-            const playerToRemove = this.exitingPlayers[i]
+        //handling buybacks
+        for(let i = 0; i < this.buyBacks.length; i++){
+            const playerToAdd = this.buyBacks[i].playerIndex
+            this.players[playerToAdd].eliminated = false;
+            this.eliminatedCount--
         }
+        this.buyBacks = []
+  
+
         //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
         while(true){
             this.dealer = (this.dealer + 1) % this.players.length;
