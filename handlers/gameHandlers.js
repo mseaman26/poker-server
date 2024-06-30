@@ -144,6 +144,10 @@ export function handleGameEvents (io, socket){
         activeGames.get(data.roomId).removePlayer(data.playerIndex);
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
+    socket.on('flip on win by fold', (data) => {
+        console.log('flip on win by fold event received')
+        io.to(data.roomId).emit('flip on win by fold');
+    })
     socket.on('end game', (roomId) => {
         activeGames.delete(roomId);
         io.to(roomId).emit('end game', {});
