@@ -30,6 +30,10 @@ export function handleGameEvents (io, socket){
     socket.on('bet', (data) => {
         let game = activeGames.get(data.roomId);
         io.to(data.roomId).emit('room id test', data.roomId);
+        if(!game){
+            console.log('game not found')
+            return;
+        }
         game.bet(data.amount);
         
         if(game.flipCards){
@@ -56,11 +60,19 @@ export function handleGameEvents (io, socket){
     })
     socket.on('done flopping', (data) => {
         let game = activeGames.get(data.roomId);
+        if(!game){
+            console.log('game not found')
+            return;
+        }
         game.flopping = false;
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('done flipping', (data) => {
         let game = activeGames.get(data.roomId);
+        if(!game){
+            console.log('game not found')
+            return;
+        }
         game.flipCards = false;
         for(let i = 0; i < game.players.length; i++){
             game.handHandler.hand = [...game.players[i].pocket.concat(game.flop)];
@@ -71,16 +83,28 @@ export function handleGameEvents (io, socket){
     })
     socket.on('done turning', (data) => {
         let game = activeGames.get(data.roomId);
+        if(!game){
+            console.log('game not found')
+            return;
+        }
         game.turning = false;
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('done rivering', (data) => {
         let game = activeGames.get(data.roomId);
+        if(!game){
+            console.log('game not found')
+            return;
+        }
         game.rivering = false;
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('fold', (data) => {
         let game = activeGames.get(data.roomId);
+        if(!game){
+            console.log('game not found')
+            return;
+        }
         game.fold();
         if(game.winByFold){
             io.to(data.roomId).emit('win by fold');
@@ -109,6 +133,10 @@ export function handleGameEvents (io, socket){
     })
     socket.on('next flip', (data) => {
         let game = activeGames.get(data.roomId);
+        if(!game){
+            console.log('game not found')
+            return;
+        }
         game.nextFlip();
         console.log('next flip received from client')
         console.log('game round', game.round)
@@ -118,10 +146,20 @@ export function handleGameEvents (io, socket){
         }
     })
     socket.on('all in', (data) => {
-        activeGames.get(data.roomId).players[data.turn].allIn = data.amount;
-        io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        let game = activeGames.get(data.roomId);
+        if(!game){
+            console.log('game not found')
+            return;
+        }
+        game.players[data.turn].allIn = data.amount;
+        io.to(data.roomId).emit('game state', game);
     });
     socket.on('next hand', (data) => {
+        let game = activeGames.get(data.roomId);
+        if(!game){
+            console.log('game not found')
+            return;
+        }
         activeGames.get(data.roomId).nextHand();
         io.to(data.roomId).emit('deal', activeGames.get(data.roomId));
         // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
