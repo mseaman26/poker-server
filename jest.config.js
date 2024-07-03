@@ -16,6 +16,7 @@ export default {
     // testMatch: ["<rootDir>/__tests__/gameTests2/simpleSplit.test.js"]
     // testMatch: ["<rootDir>/__tests__/gameTests2/buyBack.1.test.js"]
     // testMatch: ["<rootDir>/__tests__/gameTests2/addAndRemovePlayer.test.js"]
+    // testMatch: ["<rootDir>/__tests__/gameTests2/changeBlinds.test.js"]
     testMatch: ["<rootDir>/__tests__/**/*.test.js"]
   };
   

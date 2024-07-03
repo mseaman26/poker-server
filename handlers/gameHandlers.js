@@ -37,8 +37,12 @@ export function handleGameEvents (io, socket){
         game.bet(data.amount);
         
         if(game.flipCards){
-            console.log('flip cards being emitted from server')
-            //io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+            console.log('player 0 allIn', game.players[0].allIn)
+            console.log('player 1 allIn', game.players[1].allIn)
+            console.log('player 2 allIn', game.players[2].allIn)
+            console.log('game round', game.round)
+            console.log('game turn: ', game.turn)
+            // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
             io.to(data.roomId).emit('flip cards', game);
         }
         else if(game.flopping){
@@ -146,12 +150,20 @@ export function handleGameEvents (io, socket){
         }
     })
     socket.on('all in', (data) => {
+        console.log('all in received from client')
         let game = activeGames.get(data.roomId);
+        game.lastAction = {
+            action: 'all in',
+            playerIndex: data.turn,
+            amount: data.amount,
+            allIn: data.amount + game.players[data.turn].bet
+        }
+        socket.to(data.roomId).emit('all in', {amount: data.amount + game.players[data.turn].bet, playerIndex: data.turn});
         if(!game){
             console.log('game not found')
             return;
         }
-        game.players[data.turn].allIn = data.amount;
+        game.players[data.turn].allIn = data.amount
         io.to(data.roomId).emit('game state', game);
     });
     socket.on('next hand', (data) => {
@@ -186,7 +198,22 @@ export function handleGameEvents (io, socket){
         console.log('flip on win by fold event received')
         io.to(data.roomId).emit('flip on win by fold');
     })
+    socket.on('change blinds', (data) => {
+        let game = activeGames.get(data.roomId);
+        if(!game){
+            console.log('game not found')
+            return;
+        }
+        console.log('change blinds event received')
+        game.changeBlinds(data.newBigBlind);
+        io.to(data.roomId).emit('game state', game);
+    });
     socket.on('end game', (roomId) => {
+        let game = activeGames.get(roomId);
+        if(!game){
+            console.log('game not found')
+            return;
+        }
         activeGames.delete(roomId);
         io.to(roomId).emit('end game', {});
         io.to(roomId).emit('game state', {});

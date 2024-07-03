@@ -42,11 +42,17 @@ export class Game{
         this.winByFold = false
         this.buyBacks = []
         this.exitingPlayers = []
+        this.newBigBlind = null
+        this.lastAction = null
     }
 
     startGame(){
         this.handComplete = false
         this.winByFold = false
+        if(this.newBigBlind){
+            this.bigBlind = this.newBigBlind
+            this.newBigBlind = null
+        }
         if(!this.isTest){
             this.deck.shuffleDeck();
             this.deck.shuffleDeck();
@@ -81,6 +87,7 @@ export class Game{
     nextTurn(){
         let secondHighest = 0
         let highest = 0
+        //calculating max bet
         for(let i = 0; i < this.players.length; i++){
             if(this.players[i].chips + this.players[i].bet > highest && !this.players[i].eliminated && !this.players[i].folded){
                 secondHighest = highest
@@ -130,8 +137,8 @@ export class Game{
             return
         }
         else if(this.allInCount + this.foldedCount + this.eliminatedCount >= this.players.length -1 && this.currentBet === 0 && this.players.length > 1){
+            console.log('flip cards in nextturn')
             //flip cards
-            console.log('flip cards in game object')
             console.log('flop: ', this.flop)
             for(let i = 0; i < this.players.length; i++){
                 //setting every players possible max win amount
@@ -151,14 +158,13 @@ export class Game{
                 console.log('flop length: ', this.flop.length)
                 this.flop.push(this.deck.dealCard());
             }
-            console.log('flop within game object after flip cards', this.flop)
+
             this.turn = null
             this.flipCards = true
 
             return
         }
         else{
-            console.log('setting max bet in next turn')
             this.turn = (this.turn + 1) % this.players.length;
             // let secondHighest = 0
             // let highest = 0
@@ -203,6 +209,7 @@ export class Game{
         console.log('next round')
         if(this.allInCount + this.foldedCount === this.players.length - 1){
             //flip cards
+            console.log('flip cards in next round')
             this.turn = null
             while(this.flop.length < 5){
                 this.flop.push(this.deck.dealCard());
@@ -303,6 +310,10 @@ export class Game{
         console.log('next hand')
         this.handComplete = false
         this.winByFold = false
+        if(this.newBigBlind){
+            this.bigBlind = this.newBigBlind
+            this.newBigBlind = null
+        }
         this.nextHandCallCount++
         if(!this.isTest){
             this.deck.createDeck();
@@ -428,23 +439,49 @@ export class Game{
 
     }
     bet(amount){
+        console.log('bet amount: ', amount)
         if(this.players[this.turn].bet + amount > this.currentBet){
             this.betIndex = this.turn;
             if(this.currentBet === 0){
                 this.players[this.turn].action = 'bet'
-                this.players[this.turn].actionAmount = amount + this.players[this.turn].bet      
+                this.players[this.turn].actionAmount = amount + this.players[this.turn].bet
+                this.lastAction = {
+                    playerIndex: this.turn,
+                    action: this.players[this.turn].allIn ? 'all in' : 'bet',
+                    amount: this.players[this.turn].allIn ? this.players[this.turn].bet + amount : amount,
+                    allIn: this.players[this.turn].allIn
+                }     
             }else{
                 this.players[this.turn].action = 'raise'
-                this.players[this.turn].actionAmount = amount + this.players[this.turn].bet - 
-                    this.currentBet
+                this.players[this.turn].actionAmount = amount + this.players[this.turn].bet - this.currentBet
+                this.lastAction = {
+                    playerIndex: this.turn,
+                    action: this.players[this.turn].allIn ? 'all in' : 'raise',
+                    // amount: amount + this.players[this.turn].bet - this.currentBet
+                    amount: this.players[this.turn].allIn ? this.players[this.turn].bet + amount : amount - this.currentBet + this.players[this.turn].bet,
+                    allIn: this.players[this.turn].allIn
+                }
             }
         }else{
             if(this.currentBet === 0){
                 this.players[this.turn].action = 'check'
                 this.players[this.turn].actionAmount = 0 
+                this.lastAction = {
+                    playerIndex: this.turn,
+                    action: 'check',
+                    amount: 0,
+                    allIn: this.players[this.turn].allIn
+                }
             }else{
                 this.players[this.turn].action = 'call'
                 this.players[this.turn].actionAmount = amount
+                this.lastAction = {
+                    playerIndex: this.turn,
+                    action: this.players[this.turn].allIn ? 'all in' : 'call',
+                    // amount: amount + this.players[this.turn].bet - this.currentBet
+                    amount: this.players[this.turn].allIn ? this.players[this.turn].bet + amount : amount,
+                    allIn: this.players[this.turn].allIn
+                }
             }
         }
         if(this.betIndex === null){
@@ -478,8 +515,8 @@ export class Game{
             }
         }
         //flip cards
-        console.log('flip cards')
         if(this.foldedCount + this.allInCount === this.players.length){
+            console.log('flip cards in bet')
             for(let i = 0; i < this.players.length; i++){
                 //setting every players possible max win amount
                 if(this.players[i].allIn !== null){
@@ -491,19 +528,23 @@ export class Game{
                 }
             }
             while(this.flop.length < 5){
-                console.log('inside while loop')
-                console.log('flop length: ', this.flop.length)
                 this.flop.push(this.deck.dealCard());
             }
             this.flipCards = true
             
         }
+        console.log('game turn before nextturn: ', this.turn)
         this.nextTurn();    
     }
     fold(){
         this.players[this.turn].folded = true;
         this.players[this.turn].action = 'fold'
         this.players[this.turn].actionAmount = 0
+        this.lastAction = {
+            playerIndex: this.turn,
+            action: 'fold',
+            amount: 0
+        }
         this.foldedCount += 1;
         this.nextTurn();
     }
@@ -656,6 +697,9 @@ export class Game{
     }
     removePlayer(playerIndex){
         this.exitingPlayers.push(playerIndex)
+    }
+    changeBlinds(bigBlind){
+        this.newBigBlind = bigBlind
     }
 
 
