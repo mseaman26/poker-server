@@ -622,11 +622,13 @@ export class Game{
                             maxWin += Math.min(this.players[k].moneyInPot, this.players[handledHands[i][j].index].allIn);
                         }
                     }
-                    this.handWinnerInfo.push({player: this.players[handledHands[i][j].index], maxWin: maxWin})
                     const winAmount = Math.min(this.pot, Math.floor(maxWin / splitDenom));
-
                     this.players[handledHands[i][j].index].chips += winAmount;
                     this.players[handledHands[i][j].index].winAmount = winAmount;
+                    this.handWinnerInfo.push({player: this.players[handledHands[i][j].index], maxWin: maxWin})
+                    
+
+                    
                     //take this players share out of the pot
                     this.players[handledHands[i][j].index].moneyInPot = 0;
                     this.pot -= winAmount;

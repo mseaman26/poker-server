@@ -115,7 +115,7 @@ export function handleGameEvents (io, socket){
         }
         else if(game.flipCards){
             console.log('flip cards has been set to true')
-            socket.to(data.roomId).emit('snapshot', game.snapShot);
+            io.to(data.roomId).emit('snapshot', game.snapShot);
             io.to(data.roomId).emit('flip cards', game);
         }
         else if(game.flopping){
