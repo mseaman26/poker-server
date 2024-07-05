@@ -38,7 +38,8 @@ export function handleGameEvents (io, socket){
         
         if(game.flipCards){
             console.log('come on snapshot', game.snapShot)
-            socket.to(data.roomId).emit('snapshot', game.snapShot);
+            io.to(data.roomId).emit('snapshot', game.snapShot);
+            
             // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
             io.to(data.roomId).emit('flip cards', game);
         }
@@ -114,6 +115,7 @@ export function handleGameEvents (io, socket){
         }
         else if(game.flipCards){
             console.log('flip cards has been set to true')
+            socket.to(data.roomId).emit('snapshot', game.snapShot);
             io.to(data.roomId).emit('flip cards', game);
         }
         else if(game.flopping){
@@ -149,12 +151,6 @@ export function handleGameEvents (io, socket){
     socket.on('all in', (data) => {
         console.log('all in received from client')
         let game = activeGames.get(data.roomId);
-        game.lastAction = {
-            action: 'all in',
-            playerIndex: data.turn,
-            amount: data.amount,
-            allIn: data.amount + game.players[data.turn].bet
-        }
         socket.to(data.roomId).emit('all in', {amount: data.amount + game.players[data.turn].bet, playerIndex: data.turn});
         if(!game){
             console.log('game not found')

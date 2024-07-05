@@ -159,7 +159,7 @@ export class Game{
                 console.log('flop length: ', this.flop.length)
                 this.flop.push(this.deck.dealCard());
             }
-
+           
             this.turn = null
             this.flipCards = true
 
@@ -519,10 +519,7 @@ export class Game{
         //flip cards
         if(this.foldedCount + this.allInCount === this.players.length){
             console.log('flip cards in bet')
-            console.log('snapshot of players: ', this.players)
             this.snapShot = JSON.parse(JSON.stringify(this.players));
-            console.log('snapshot in bet: ', this.snapShot)
-            console.log('stringified and parsed players in bet: ', JSON.parse(JSON.stringify(this.players)))
             for(let i = 0; i < this.players.length; i++){
                 //setting every players possible max win amount
                 if(this.players[i].allIn !== null){
@@ -546,12 +543,9 @@ export class Game{
         this.players[this.turn].folded = true;
         this.players[this.turn].action = 'fold'
         this.players[this.turn].actionAmount = 0
-        this.lastAction = {
-            playerIndex: this.turn,
-            action: 'fold',
-            amount: 0
-        }
         this.foldedCount += 1;
+        console.log('player in fold: ', this.players[this.turn])
+        this.snapShot = JSON.parse(JSON.stringify(this.players));
         this.nextTurn();
     }
     handleNumericalHands(){
