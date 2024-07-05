@@ -43,7 +43,7 @@ export class Game{
         this.buyBacks = []
         this.exitingPlayers = []
         this.newBigBlind = null
-        this.lastAction = null
+        this.snapShot = null
     }
 
     startGame(){
@@ -74,6 +74,7 @@ export class Game{
             this.players[i].numericalHand = null;
             this.players[i].action = ''
             this.players[i].actionAmount = 0
+            this.players[i].winAmount = 0
         }
         this.bet(Math.floor(this.bigBlind / 2));
         this.players[(this.turn + this.players.length - 1) % this.players.length].action = ''
@@ -374,6 +375,7 @@ export class Game{
             this.players[i].isWinner = false;
             this.players[i].actualHand = null;
             this.players[i].inBuybackQueue = false;
+            this.players[i].winAmount = 0;
         }
         
         //user newdealerindex to set the new dealer
@@ -517,6 +519,10 @@ export class Game{
         //flip cards
         if(this.foldedCount + this.allInCount === this.players.length){
             console.log('flip cards in bet')
+            console.log('snapshot of players: ', this.players)
+            this.snapShot = JSON.parse(JSON.stringify(this.players));
+            console.log('snapshot in bet: ', this.snapShot)
+            console.log('stringified and parsed players in bet: ', JSON.parse(JSON.stringify(this.players)))
             for(let i = 0; i < this.players.length; i++){
                 //setting every players possible max win amount
                 if(this.players[i].allIn !== null){
@@ -623,11 +629,13 @@ export class Game{
                         }
                     }
                     this.handWinnerInfo.push({player: this.players[handledHands[i][j].index], maxWin: maxWin})
+                    const winAmount = Math.min(this.pot, Math.floor(maxWin / splitDenom));
 
-                    this.players[handledHands[i][j].index].chips += Math.min(this.pot, Math.floor(maxWin / splitDenom));
+                    this.players[handledHands[i][j].index].chips += winAmount;
+                    this.players[handledHands[i][j].index].winAmount = winAmount;
                     //take this players share out of the pot
                     this.players[handledHands[i][j].index].moneyInPot = 0;
-                    this.pot -= Math.min(this.pot, Math.floor(maxWin / splitDenom));
+                    this.pot -= winAmount;
                     splitDenom --;
                     
                 }

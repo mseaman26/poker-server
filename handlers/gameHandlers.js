@@ -37,11 +37,8 @@ export function handleGameEvents (io, socket){
         game.bet(data.amount);
         
         if(game.flipCards){
-            console.log('player 0 allIn', game.players[0].allIn)
-            console.log('player 1 allIn', game.players[1].allIn)
-            console.log('player 2 allIn', game.players[2].allIn)
-            console.log('game round', game.round)
-            console.log('game turn: ', game.turn)
+            console.log('come on snapshot', game.snapShot)
+            socket.to(data.roomId).emit('snapshot', game.snapShot);
             // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
             io.to(data.roomId).emit('flip cards', game);
         }
