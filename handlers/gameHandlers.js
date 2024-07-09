@@ -2,6 +2,31 @@ import {Game} from './Game.js';
 import { threePlayerOneAndTwoSplit } from './fixedDecks.js';
 const activeGames = new Map();
 
+function isObject(item) {
+    return (item && typeof item === 'object' && !Array.isArray(item));
+}
+  
+  function deepMerge(target, source) {
+    if (!target) target = {};
+  
+    for (const key in source) {
+        if (isObject(source[key])) {
+            if (!(key in target)) {
+                Object.assign(target, { [key]: {} });
+            }
+            deepMerge(target[key], source[key]);
+        } else if (Array.isArray(source[key])) {
+            if (!Array.isArray(target[key])) {
+                target[key] = [];
+            }
+            target[key] = target[key].concat(source[key]);
+        } else {
+            Object.assign(target, { [key]: source[key] });
+        }
+    }
+    return target;
+  }
+
 export function handleGameEvents (io, socket){
     socket.on('start game', (data) => {
         io.to(data.roomId).emit('game started');
@@ -201,6 +226,21 @@ export function handleGameEvents (io, socket){
         game.changeBlinds(data.newBigBlind);
         io.to(data.roomId).emit('game state', game);
     });
+    socket.on('resume game', (data) => {
+        let game = activeGames.get(data.roomId);
+        if(!game){
+            console.log('game not found, making new game')
+            activeGames.set(data.roomId, new Game(data.roomId, data.players, data.dealer, data.bigBlind, data.buyIn));
+        }
+        game = activeGames.get(data.roomId);
+        if(!game){
+            console.log('game not found, something went wrong create new game')
+            return;
+        }
+        console.log('game before resume', game)
+        deepMerge(game, data.state);
+        io.to(data.roomId).emit('game state', game);
+    })
     socket.on('end game', (roomId) => {
         let game = activeGames.get(roomId);
         if(!game){
