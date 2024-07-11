@@ -142,7 +142,8 @@ export class Game{
             console.log('flip cards in nextturn')
             //flip cards
             console.log('flop: ', this.flop)
-            this.snapShot = JSON.parse(JSON.stringify(this.players));
+            // this.snapShot = JSON.parse(JSON.stringify(this.players));
+            console.log('snapshot in next turn: ', this.snapShot)
             for(let i = 0; i < this.players.length; i++){
                 //setting every players possible max win amount
                 if(this.players[i].allIn !== null){
@@ -213,7 +214,7 @@ export class Game{
         if(this.allInCount + this.foldedCount === this.players.length - 1){
             //flip cards
             console.log('flip cards in next round')
-            this.snapShot = JSON.parse(JSON.stringify(this.players));
+            // this.snapShot = JSON.parse(JSON.stringify(this.players));
             this.turn = null
             while(this.flop.length < 5){
                 this.flop.push(this.deck.dealCard());
@@ -523,6 +524,7 @@ export class Game{
         if(this.foldedCount + this.allInCount === this.players.length){
             console.log('flip cards in bet')
             this.snapShot = JSON.parse(JSON.stringify(this.players));
+            console.log('snapshot in bet: ', this.snapShot)
             for(let i = 0; i < this.players.length; i++){
                 //setting every players possible max win amount
                 if(this.players[i].allIn !== null){
@@ -539,6 +541,10 @@ export class Game{
             this.flipCards = true
             
         }
+        else if((this.allInCount + this.foldedCount + this.eliminatedCount >= this.players.length -1 && this.currentBet === 0 && this.players.length > 1) ||this.allInCount + this.foldedCount === this.players.length - 1){
+            console.log('flip cards in bet2')
+            this.snapShot = JSON.parse(JSON.stringify(this.players));
+        }
         console.log('game turn before nextturn: ', this.turn)
         this.nextTurn();    
     }
@@ -548,7 +554,11 @@ export class Game{
         this.players[this.turn].actionAmount = 0
         this.foldedCount += 1;
         console.log('player in fold: ', this.players[this.turn])
-        this.snapShot = JSON.parse(JSON.stringify(this.players));
+        // this.snapShot = JSON.parse(JSON.stringify(this.players));
+        if((this.allInCount + this.foldedCount + this.eliminatedCount >= this.players.length -1 && this.currentBet === 0 && this.players.length > 1) || this.allInCount + this.foldedCount === this.players.length - 1){
+            console.log('flip cards in fold')
+            this.snapShot = JSON.parse(JSON.stringify(this.players));
+        }
         this.nextTurn();
     }
     handleNumericalHands(){
