@@ -44,6 +44,7 @@ export class Game{
         this.exitingPlayers = []
         this.newBigBlind = null
         this.snapShot = null
+        this.flipCardsOnFold = false
     }
 
     startGame(){
@@ -140,9 +141,16 @@ export class Game{
         }
         else if(this.allInCount + this.foldedCount + this.eliminatedCount >= this.players.length -1 && this.currentBet === 0 && this.players.length > 1){
             console.log('flip cards in nextturn')
+            if(this.flipCards){
+                console.log('flip cards is true')
+            }
             //flip cards
             console.log('flop: ', this.flop)
-            // this.snapShot = JSON.parse(JSON.stringify(this.players));
+            if(!this.flipCards){
+                console.log('changing snapshot in next turn')
+                this.snapShot = JSON.parse(JSON.stringify(this.players));
+            }
+       
             console.log('snapshot in next turn: ', this.snapShot)
             for(let i = 0; i < this.players.length; i++){
                 //setting every players possible max win amount
@@ -315,6 +323,7 @@ export class Game{
         console.log('next hand')
         this.handComplete = false
         this.winByFold = false
+        this.flipCardsOnFold = false
         if(this.newBigBlind){
             this.bigBlind = this.newBigBlind
             this.newBigBlind = null
@@ -522,7 +531,7 @@ export class Game{
         }
         //flip cards
         if(this.foldedCount + this.allInCount === this.players.length){
-            console.log('flip cards in bet')
+            console.log('flip cards in bet, changing snapshot')
             this.snapShot = JSON.parse(JSON.stringify(this.players));
             console.log('snapshot in bet: ', this.snapShot)
             for(let i = 0; i < this.players.length; i++){
@@ -541,9 +550,16 @@ export class Game{
             this.flipCards = true
             
         }
-        else if((this.allInCount + this.foldedCount + this.eliminatedCount >= this.players.length -1 && this.currentBet === 0 && this.players.length > 1) ||this.allInCount + this.foldedCount === this.players.length - 1){
-            console.log('flip cards in bet2')
+        //otherwise if the pot is square and all but one player is all in or folded
+        let calculatedNextTurn = (this.turn + 1) % this.players.length
+        while(this.players[calculatedNextTurn].eliminated === true || this.players[calculatedNextTurn].folded === true){
+            calculatedNextTurn = (calculatedNextTurn + 1) % this.players.length
+        }
+        console.log('calculated next turn: ', calculatedNextTurn)
+        if(calculatedNextTurn === this.betIndex && this.foldedCount + this.allInCount + this.eliminatedCount >= this.players.length - 1){
+            console.log('flip cards in bet2, changing snapshot')
             this.snapShot = JSON.parse(JSON.stringify(this.players));
+            this.flipCards = true
         }
         console.log('game turn before nextturn: ', this.turn)
         this.nextTurn();    
@@ -555,9 +571,11 @@ export class Game{
         this.foldedCount += 1;
         console.log('player in fold: ', this.players[this.turn])
         // this.snapShot = JSON.parse(JSON.stringify(this.players));
-        if((this.allInCount + this.foldedCount + this.eliminatedCount >= this.players.length -1 && this.currentBet === 0 && this.players.length > 1) || this.allInCount + this.foldedCount === this.players.length - 1){
-            console.log('flip cards in fold')
+        if(this.allInCount + this.foldedCount + this.eliminatedCount >= this.players.length -1 && (this.turn + 1) % this.players.length === this.betIndex){
+            console.log('flip cards in fold, changing snapshot')
             this.snapShot = JSON.parse(JSON.stringify(this.players));
+            this.flipCards = true
+            this.flipCardsOnFold = true
         }
         this.nextTurn();
     }
