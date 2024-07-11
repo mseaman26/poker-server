@@ -118,6 +118,7 @@ export class Game{
                     //give money to winner by fold
                     this.handWinnerInfo.push({player: this.players[i]})
                     this.players[i].chips += this.pot;
+                    this.players[i].winAmount = this.pot
                     this.pot = 0;
                     // if(this.isTest){
                     //     this.nextHandNoShuffle();
@@ -141,6 +142,7 @@ export class Game{
             console.log('flip cards in nextturn')
             //flip cards
             console.log('flop: ', this.flop)
+            this.snapShot = JSON.parse(JSON.stringify(this.players));
             for(let i = 0; i < this.players.length; i++){
                 //setting every players possible max win amount
                 if(this.players[i].allIn !== null){
@@ -211,6 +213,7 @@ export class Game{
         if(this.allInCount + this.foldedCount === this.players.length - 1){
             //flip cards
             console.log('flip cards in next round')
+            this.snapShot = JSON.parse(JSON.stringify(this.players));
             this.turn = null
             while(this.flop.length < 5){
                 this.flop.push(this.deck.dealCard());

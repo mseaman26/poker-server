@@ -237,8 +237,9 @@ export function handleGameEvents (io, socket){
             console.log('game not found, something went wrong create new game')
             return;
         }
-        console.log('game before resume', game)
+        console.log('dealer before merge', game.dealer)
         deepMerge(game, data.state);
+        console.log('game after merge', game)
         io.to(data.roomId).emit('game state', game);
     })
     socket.on('end game', (roomId) => {
