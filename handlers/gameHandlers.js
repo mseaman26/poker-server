@@ -227,6 +227,7 @@ export function handleGameEvents (io, socket){
         io.to(data.roomId).emit('game state', game);
     });
     socket.on('resume game', (data) => {
+        console.log('data.state.players in resume game: ', data.state.players)
         let game = activeGames.get(data.roomId);
         if(!game){
             console.log('game not found, making new game')
@@ -237,8 +238,8 @@ export function handleGameEvents (io, socket){
             console.log('game not found, something went wrong create new game')
             return;
         }
-        console.log('dealer before merge', game.dealer)
         deepMerge(game, data.state);
+        game.players = data.state.players;
         console.log('game after merge', game)
         io.to(data.roomId).emit('game state', game);
     })
