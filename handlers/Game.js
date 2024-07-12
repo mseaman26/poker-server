@@ -324,6 +324,7 @@ export class Game{
         this.handComplete = false
         this.winByFold = false
         this.flipCardsOnFold = false
+        this.flipCards = false
         if(this.newBigBlind){
             this.bigBlind = this.newBigBlind
             this.newBigBlind = null
