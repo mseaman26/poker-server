@@ -556,7 +556,7 @@ export class Game{
             calculatedNextTurn = (calculatedNextTurn + 1) % this.players.length
         }
         console.log('calculated next turn: ', calculatedNextTurn)
-        if(calculatedNextTurn === this.betIndex && this.foldedCount + this.allInCount + this.eliminatedCount >= this.players.length - 1){
+        if(calculatedNextTurn === this.betIndex && this.foldedCount + this.allInCount + this.eliminatedCount >= this.players.length - 1 && this.eliminatedCount < this.players.length - 1){
             console.log('flip cards in bet2, changing snapshot')
             this.snapShot = JSON.parse(JSON.stringify(this.players));
             this.flipCards = true
