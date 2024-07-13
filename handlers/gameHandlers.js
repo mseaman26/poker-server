@@ -29,7 +29,27 @@ function isObject(item) {
         }
     }
     return target;
-  }
+}
+
+function emitGameStateToPlayers(io, gameState, usersInRooms) {
+    gameState.players.forEach(player => {
+      const socketId = usersInRooms.get(player.userId);
+  
+      if (socketId) {
+        // Create a copy of the game state with only the current player's cards or any cards that should be visible to all players
+        const playerSpecificGameState = {
+            ...gameState,
+            players: gameState.players.map(p => ({
+                ...p,
+                pocket: p.userId === player.userId || p.showCards ? p.pocket : []
+            }))
+        };
+  
+        // Emit the modified game state to the specific player
+        io.to(socketId).emit('game state', playerSpecificGameState);
+      }
+    });
+}
 
 export function handleGameEvents (io, socket){
 
