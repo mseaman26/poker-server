@@ -1,6 +1,7 @@
 
 import {Game} from '../../handlers/Game.js'
 import { deck2_1, deck3_1, deck3_2} from '../../handlers/fixedDecks.js'
+import { checkDeck } from '../../lib/helpers.js'
 describe('Game', () => {
     test('should return a new game', () => {
         const game = new Game()
@@ -25,48 +26,61 @@ describe('Game', () => {
             },
         ]
         let game = new Game(1, players, 0, 100, 1000)
+        console.log('!!!')
+    
         game.isTest = true
         game.deck.deck = [...deck2_1]
         expect(game.deck.deck.length).toBe(52)
         
         game.startGameNoShuffle()
+        expect(checkDeck(game)).toBe(true)
         expect(game.dealer).toBe(0)
         expect(game.turn).toBe(1)
         expect(game.round).toBe(0)
         expect(game.currentBet).toBe(100)
+    
         expect(game.pot).toBe(150)
         expect(game.checktotals()).toBe(true)
         //round 0
         game.bet(50) //1
         expect(game.checktotals()).toBe(true)
         expect(game.round).toBe(0)
+        expect(checkDeck(game)).toBe(true)
         game.bet(0) //0
         //round 1
         expect(game.round).toBe(1)
+
         expect(game.checktotals()).toBe(true)
+        expect(checkDeck(game)).toBe(true)
         expect(game.turn).toBe(1)
         game.bet(325) //1
         expect(game.checktotals()).toBe(true)
         expect(game.round).toBe(1)
+        expect(checkDeck(game)).toBe(true)
+
         game.bet(325) //0
         expect(game.round).toBe(2)
         //round 2
         expect(game.turn).toBe(1)
         game.bet(200) //1
         game.bet(203) //0
+        expect(checkDeck(game)).toBe(true)
         expect(game.round).toBe(2)
         game.bet(3)  //1
         expect(game.checktotals()).toBe(true)
         expect(game.round).toBe(3)
         //round 3
         game.bet(0) //1
+        expect(checkDeck(game)).toBe(true)
         game.bet(0) //2
         console.log('handWinnerImnfo', game.handWinnerInfo)
         //next hand
         game.nextHand()
         game.deck.deck = [...deck3_1]
+        console.log('game deck', game.deck.deck)
         game.deck.dealPockets(game.players)
         expect(game.checktotals()).toBe(true)
+        expect(checkDeck(game)).toBe(true)
         expect(game.players[0].chips).toBe(322) //small blinds
         expect(game.players[1].chips).toBe(1528) //big blinds
         expect(game.round).toBe(0)

@@ -1,6 +1,10 @@
 import {Game} from './Game.js';
 import { threePlayerOneAndTwoSplit } from './fixedDecks.js';
+import { checkDeck } from '../lib/helpers.js';
 const activeGames = new Map();
+
+
+
 
 function isObject(item) {
     return (item && typeof item === 'object' && !Array.isArray(item));
@@ -28,6 +32,7 @@ function isObject(item) {
   }
 
 export function handleGameEvents (io, socket){
+
     socket.on('start game', (data) => {
         io.to(data.roomId).emit('game started');
         if(!activeGames.has(data.roomId)){
@@ -38,16 +43,25 @@ export function handleGameEvents (io, socket){
             activeGames.get(data.roomId).deck.deck = [...threePlayerOneAndTwoSplit];
             activeGames.get(data.roomId).startGameNoShuffle();
             io.to(data.roomId).emit('start game', activeGames.get(data.roomId));
+            if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+                throw new Error('bad deck');
+            }
             io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }else{
             activeGames.get(data.roomId).startGame();
             io.to(data.roomId).emit('start game', activeGames.get(data.roomId));
-                io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+            if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+                throw new Error('bad deck');
+            }
+            io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }
         
     });
     socket.on('game state', (roomId) => {
         if(activeGames.has(roomId)){
+            if(process.env !== 'production' && !checkDeck(activeGames.get(roomId))){
+                throw new Error('bad deck');
+            }
             io.to(roomId).emit('game state', activeGames.get(roomId));
         }
     })
@@ -66,21 +80,36 @@ export function handleGameEvents (io, socket){
             io.to(data.roomId).emit('snapshot', game.snapShot);
             
             // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+            if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+                throw new Error('bad deck');
+            }
             io.to(data.roomId).emit('flip cards', game);
         }
         else if(game.flopping){
             io.to(data.roomId).emit('flopping', game);
+            if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+                throw new Error('bad deck');
+            }
             io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }
         else if(game.turning){
             io.to(data.roomId).emit('turning', game);
+            if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+                throw new Error('bad deck');
+            }
             io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }
         else if(game.rivering){
             io.to(data.roomId).emit('rivering', game);
+            if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+                throw new Error('bad deck');
+            }
             io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }
         else{
+            if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+                throw new Error('bad deck');
+            }
             io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }
        
@@ -92,6 +121,9 @@ export function handleGameEvents (io, socket){
             return;
         }
         game.flopping = false;
+        if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('done flipping', (data) => {
@@ -106,6 +138,9 @@ export function handleGameEvents (io, socket){
             game.players[i].actualHand = game.handHandler.findHand();
         }
         game.handleNumericalHands();
+        if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('done turning', (data) => {
@@ -115,6 +150,9 @@ export function handleGameEvents (io, socket){
             return;
         }
         game.turning = false;
+        if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('done rivering', (data) => {
@@ -124,6 +162,9 @@ export function handleGameEvents (io, socket){
             return;
         }
         game.rivering = false;
+        if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('fold', (data) => {
@@ -135,6 +176,9 @@ export function handleGameEvents (io, socket){
         game.fold();
         if(game.winByFold){
             io.to(data.roomId).emit('win by fold');
+            if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+                throw new Error('bad deck');
+            }
             io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
             game.winByFold = false;
         }
@@ -145,17 +189,29 @@ export function handleGameEvents (io, socket){
         }
         else if(game.flopping){
             io.to(data.roomId).emit('flopping', game);
+            if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+                throw new Error('bad deck');
+            }
             io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }
         else if(game.turning){
             io.to(data.roomId).emit('turning', game);
+            if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+                throw new Error('bad deck');
+            }
             io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }
         else if(game.rivering){
             io.to(data.roomId).emit('rivering', game);
+            if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+                throw new Error('bad deck');
+            }
             io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }
         else{
+            if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+                throw new Error('bad deck');
+            }
             io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         }
     })
@@ -168,6 +224,9 @@ export function handleGameEvents (io, socket){
         game.nextFlip();
         console.log('next flip received from client')
         console.log('game round', game.round)
+        if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
         if(game.flipCards){
             io.to(data.roomId).emit('flip cards', game);
@@ -182,6 +241,9 @@ export function handleGameEvents (io, socket){
             return;
         }
         game.players[data.turn].allIn = data.amount
+        if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
         io.to(data.roomId).emit('game state', game);
     });
     socket.on('next hand', (data) => {
@@ -191,13 +253,22 @@ export function handleGameEvents (io, socket){
             return;
         }
         activeGames.get(data.roomId).nextHand();
+        if(process.env !== 'production' && process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
         io.to(data.roomId).emit('deal', activeGames.get(data.roomId));
         // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('done dealing', (data) => {
+        if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('buy back', (data) => {
+        if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
         activeGames.get(data.roomId).buyBack(data.playerIndex, data.amount);
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
@@ -205,11 +276,17 @@ export function handleGameEvents (io, socket){
         console.log('add player event received')
         console.log('data: ', data)   
         activeGames.get(data.roomId).addPlayer(data.player);
+        if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('remove player', (data) => {
         console.log('remove player event received')
         activeGames.get(data.roomId).removePlayer(data.playerIndex);
+        if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
         io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('flip on win by fold', (data) => {
@@ -224,6 +301,9 @@ export function handleGameEvents (io, socket){
         }
         console.log('change blinds event received')
         game.changeBlinds(data.newBigBlind);
+        if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
         io.to(data.roomId).emit('game state', game);
     });
     socket.on('resume game', (data) => {
@@ -241,6 +321,9 @@ export function handleGameEvents (io, socket){
         deepMerge(game, data.state);
         game.players = data.state.players;
         console.log('game after merge', game)
+        if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
         io.to(data.roomId).emit('game state', game);
     })
     socket.on('end game', (roomId) => {
@@ -251,6 +334,9 @@ export function handleGameEvents (io, socket){
         }
         activeGames.delete(roomId);
         io.to(roomId).emit('end game', {});
+        if(process.env !== 'production' && !checkDeck(activeGames.get(roomId))){
+            throw new Error('bad deck');
+        }
         io.to(roomId).emit('game state', {});
     });
 

@@ -98,8 +98,6 @@ export class Game{
                 secondHighest = this.players[i].chips + this.players[i].bet
             }
         }
-        console.log('second highest: ', secondHighest)
-        console.log('round: ', this.round)
         this.maxBet = secondHighest
         
        if(this.foldedCount + this.eliminatedCount === this.players.length - 1){
@@ -141,17 +139,11 @@ export class Game{
         }
         else if(this.allInCount + this.foldedCount + this.eliminatedCount >= this.players.length -1 && this.currentBet === 0 && this.players.length > 1){
             console.log('flip cards in nextturn')
-            if(this.flipCards){
-                console.log('flip cards is true')
-            }
             //flip cards
-            console.log('flop: ', this.flop)
             if(!this.flipCards){
-                console.log('changing snapshot in next turn')
                 this.snapShot = JSON.parse(JSON.stringify(this.players));
             }
        
-            console.log('snapshot in next turn: ', this.snapShot)
             for(let i = 0; i < this.players.length; i++){
                 //setting every players possible max win amount
                 if(this.players[i].allIn !== null){
@@ -166,8 +158,6 @@ export class Game{
             //     this.players[i].moneyInPot = 0;
             // }
             while(this.flop.length < 5){
-                console.log('pushing to flop in next turn while loop: ', this.flop)
-                console.log('flop length: ', this.flop.length)
                 this.flop.push(this.deck.dealCard());
             }
            
@@ -218,7 +208,6 @@ export class Game{
         } 
     }
     nextRound(){
-        console.log('next round')
         if(this.allInCount + this.foldedCount === this.players.length - 1){
             //flip cards
             console.log('flip cards in next round')
@@ -245,7 +234,6 @@ export class Game{
             ]
         }
         else if(this.round === 2){
-            console.log('round 2 scenario')
             this.rivering = true
             if(!this.flipCards){
                 this.flop.push(this.deck.dealCard());
@@ -274,8 +262,6 @@ export class Game{
                 secondHighest = this.players[i].chips
             }
         }
-        console.log('second highest: ', secondHighest)
-        console.log('round: ', this.round)
         this.maxBet = secondHighest
         for(let i = 0; i < this.players.length; i++){
             this.players[i].bet = 0;
@@ -288,7 +274,6 @@ export class Game{
         this.nextTurn();
     }
     nextFlip(){
-        console.log('next flip')
         if(this.round === 0){
             this.flop = this.deck.dealFlop();
             this.round += 1;
@@ -320,7 +305,6 @@ export class Game{
         }
     }
     nextHand(){
-        console.log('next hand')
         this.handComplete = false
         this.winByFold = false
         this.flipCardsOnFold = false
@@ -413,6 +397,7 @@ export class Game{
         this.foldedCount = 0;
         this.allInCount = 0;
         if(this.eliminatedCount === this.players.length - 1){
+            this.deck.dealPockets(this.players);
             return
         }  
         //set maxBet to second Highest chip holder's chip amount
@@ -426,15 +411,14 @@ export class Game{
                 secondHighest = this.players[i].chips + this.players[i].bet
             }
         }
-        console.log('second highest: ', secondHighest)
-        console.log('round: ', this.round)
         this.maxBet = secondHighest
         
         this.bet(Math.floor(this.bigBlind / 2));
         this.bet(this.bigBlind);
         this.betIndex = null;
         this.deck.dealPockets(this.players);
-
+        console.log('players after dealing pockets', this.players)
+        console.log('deck after dealing pockets', this.deck.deck)
         for(let i = 0; i < this.players.length; i++){
             this.players[i].action = ''
         }
@@ -455,7 +439,6 @@ export class Game{
 
     }
     bet(amount){
-        console.log('bet amount: ', amount)
         if(this.players[this.turn].bet + amount > this.currentBet){
             this.betIndex = this.turn;
             if(this.currentBet === 0){
@@ -532,9 +515,7 @@ export class Game{
         }
         //flip cards
         if(this.foldedCount + this.allInCount === this.players.length){
-            console.log('flip cards in bet, changing snapshot')
             this.snapShot = JSON.parse(JSON.stringify(this.players));
-            console.log('snapshot in bet: ', this.snapShot)
             for(let i = 0; i < this.players.length; i++){
                 //setting every players possible max win amount
                 if(this.players[i].allIn !== null){
@@ -556,13 +537,11 @@ export class Game{
         while(this.players[calculatedNextTurn].eliminated === true || this.players[calculatedNextTurn].folded === true){
             calculatedNextTurn = (calculatedNextTurn + 1) % this.players.length
         }
-        console.log('calculated next turn: ', calculatedNextTurn)
         if(calculatedNextTurn === this.betIndex && this.foldedCount + this.allInCount + this.eliminatedCount >= this.players.length - 1 && this.eliminatedCount < this.players.length - 1){
             console.log('flip cards in bet2, changing snapshot')
             this.snapShot = JSON.parse(JSON.stringify(this.players));
             this.flipCards = true
         }
-        console.log('game turn before nextturn: ', this.turn)
         this.nextTurn();    
     }
     fold(){
@@ -570,10 +549,8 @@ export class Game{
         this.players[this.turn].action = 'fold'
         this.players[this.turn].actionAmount = 0
         this.foldedCount += 1;
-        console.log('player in fold: ', this.players[this.turn])
         // this.snapShot = JSON.parse(JSON.stringify(this.players));
         if(this.allInCount + this.foldedCount + this.eliminatedCount >= this.players.length -1 && (this.turn + 1) % this.players.length === this.betIndex){
-            console.log('flip cards in fold, changing snapshot')
             this.snapShot = JSON.parse(JSON.stringify(this.players));
             this.flipCards = true
             this.flipCardsOnFold = true
@@ -745,7 +722,6 @@ export class Game{
 
     //TEST FUNCTIONS
     startGameNoShuffle(){
-        console.log('no shuffle!')
 
         for(let i = 0; i < this.players.length; i++){
             
@@ -769,7 +745,6 @@ export class Game{
         this.deck.dealPockets(this.players);
     }
     nextHandNoShuffle(){
-        console.log('no shuffle!')
         this.nextHandNoShuffleCallCount++
         //this accounts for if players BEFORE the dealer are getting eliminated or if the dealer is getting eliminated
         this.turn = (this.dealer + 1) % this.players.length;
