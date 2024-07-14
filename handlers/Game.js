@@ -361,13 +361,13 @@ export class Game{
         for(let i = 0; i < this.players.length; i++){
             if(this.players[i].chips <= 0 && this.players[i].eliminated === false){
                 this.players[i].pocket = []
-                this.players[i].showCards = false;
                 this.players[i].eliminated = true;
                 this.players[i].action = ''
                 this.players[i].actionAmount = 0
                 this.eliminatedCount++
             }
             this.players[i].isWinner = false;
+            this.players[i].showCards = false;
         }
         
         // this.players = this.players.filter(player => player.chips > 0);
@@ -432,6 +432,7 @@ export class Game{
         for(let i = 0; i < this.players.length; i++){
             this.players[i].action = ''
         }
+        console.log('players at end of nexthand', this.players)
         
     }
     checktotals(){
