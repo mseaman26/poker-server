@@ -212,6 +212,9 @@ export class Game{
             //flip cards
             console.log('flip cards in next round')
             // this.snapShot = JSON.parse(JSON.stringify(this.players));
+            if(!this.flipCards){
+                this.snapShot = JSON.parse(JSON.stringify(this.players));
+            }
             this.turn = null
             while(this.flop.length < 5){
                 this.flop.push(this.deck.dealCard());
