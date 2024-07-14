@@ -76,6 +76,7 @@ export class Game{
             this.players[i].action = ''
             this.players[i].actionAmount = 0
             this.players[i].winAmount = 0
+            this.players[i].showCards = false
         }
         this.bet(Math.floor(this.bigBlind / 2));
         this.players[(this.turn + this.players.length - 1) % this.players.length].action = ''
@@ -153,6 +154,9 @@ export class Game{
                     }
                     this.players[i].maxWin = newMax;
                 }
+                if(this.players[i].folded === false && this.players[i].eliminated === false){
+                    this.players[i].showCards = true
+                }
             }
             // for(let i = 0; i < this.players.length; i++){
             //     this.players[i].moneyInPot = 0;
@@ -215,6 +219,11 @@ export class Game{
             this.turn = null
             while(this.flop.length < 5){
                 this.flop.push(this.deck.dealCard());
+            }
+            for(let i = 0; i < this.players.length; i++){
+                if(this.players[i].folded === false && this.players[i].eliminated === false){
+                    this.players[i].showCards = true
+                }
             }
             this.flipCards = true
             return
@@ -352,6 +361,7 @@ export class Game{
         for(let i = 0; i < this.players.length; i++){
             if(this.players[i].chips <= 0 && this.players[i].eliminated === false){
                 this.players[i].pocket = []
+                this.players[i].showCards = false;
                 this.players[i].eliminated = true;
                 this.players[i].action = ''
                 this.players[i].actionAmount = 0
@@ -525,6 +535,9 @@ export class Game{
                     }
                     this.players[i].maxWin = newMax;
                 }
+                if(this.players[i].folded === false && this.players[i].eliminated === false){
+                    this.players[i].showCards = true
+                }
             }
             while(this.flop.length < 5){
                 this.flop.push(this.deck.dealCard());
@@ -570,6 +583,9 @@ export class Game{
         }
         let rankedHands = [];
         for(let i = 0; i < this.players.length; i++){
+            if(this.players[i].folded === false && this.players[i].eliminated === false){
+                this.players[i].showCards = true;
+            }
             this.handHandler.hand = [...this.players[i].pocket.concat(this.flop)];
             rankedHands.push(this.handHandler.findHand());
 

@@ -86,7 +86,7 @@ io.on("connection", (socket) =>   {
   })
 
   //game handlers
-  handleGameEvents(io, socket);
+  handleGameEvents(io, socket, userToSocketId);
 
   socket.on('disconnect', () => {
     activeUsers.delete(socket.id)
