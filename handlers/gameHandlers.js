@@ -332,9 +332,18 @@ export function handleGameEvents (io, socket, userToSocketId) {
         emitGameStateToPlayers(io, activeGames.get(data.roomId), userToSocketId);
         // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
-    socket.on('flip on win by fold', (data) => {
-        console.log('flip on win by fold event received')
-        io.to(data.roomId).emit('flip on win by fold');
+    socket.on('flip folded cards', (data) => {
+        const game = activeGames.get(data.roomId);
+        if(!game){
+            console.log('game not found')
+            return;
+        }
+        game.players[data.playerIndex].showCards = true;
+        if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
+
+        emitGameStateToPlayers(io, activeGames.get(data.roomId), userToSocketId);
     })
     socket.on('change blinds', (data) => {
         let game = activeGames.get(data.roomId);
