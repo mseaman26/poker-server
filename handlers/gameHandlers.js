@@ -45,7 +45,7 @@ function emitGameStateToPlayers(io, gameState, usersInRooms) {
                 pocket: p.userId === player.userId || p.showCards ? p.pocket : []
             }))
         };
-  
+        console.log('roomid?', playerSpecificGameState.roomId)
         // Emit the modified game state to the specific player
         io.to(socketId).emit('game state', playerSpecificGameState);
       }
@@ -314,13 +314,24 @@ export function handleGameEvents (io, socket, userToSocketId) {
         // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('add player', (data) => {
+        const game = activeGames.get(data.roomId);
+        if(!game){
+            console.log('game not found')
+            return
+        }
+        //check if player is already in game
+        for(let i = 0; i < game.players.length; i++){
+            if(game.players[i].userId === data.player.id){
+                return;
+            }
+        }
         console.log('add player event received')
-        console.log('data: ', data)   
+        console.log('add player data: ', data)   
         activeGames.get(data.roomId).addPlayer(data.player);
         if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
             throw new Error('bad deck');
         }
-        emitGameStateToPlayers(io, activeGames.get(data.roomId), userToSocketId);
+        // emitGameStateToPlayers(io, activeGames.get(data.roomId), userToSocketId);
         // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('remove player', (data) => {
