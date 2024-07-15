@@ -371,9 +371,17 @@ export function handleGameEvents (io, socket, userToSocketId) {
             console.log('game not found, something went wrong create new game')
             return;
         }
+        console.log('deck object before merge', game.deck)
+        console.log('state deck object before merge', data.state.deck)
         deepMerge(game, data.state);
         game.players = data.state.players;
+        game.deck.deck = data.state.deck.deck;
+        game.deck.suits = data.state.deck.suits;
+        game.deck.values = data.state.deck.values;
+        console.log('deck length after merge', game.deck.deck.length)
+        console.log('deck object after merge', game.deck)
         console.log('game after merge', game)
+        
         if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
             throw new Error('bad deck');
         }

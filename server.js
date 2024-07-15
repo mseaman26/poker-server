@@ -33,7 +33,7 @@ const port = process.env.PORT || 3001;
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' ? 'https://poker-taupe-one.vercel.app' : 'http://localhost:3000', // Update with your production app's URL
+    origin: process.env.NODE_ENV === 'production' ? 'https://www.mikesfriendlypoker.com' : 'http://localhost:3000', // Update with your production app's URL
     methods: ["GET", "POST", "DELETE", "PUT"],
   },
 });
