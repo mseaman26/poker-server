@@ -5,8 +5,6 @@ import { checkDeck } from '../lib/helpers.js';
 const activeGames = new Map();
 
 
-
-
 function isObject(item) {
     return (item && typeof item === 'object' && !Array.isArray(item));
 }
@@ -370,6 +368,18 @@ export function handleGameEvents (io, socket, userToSocketId) {
         emitGameStateToPlayers(io, activeGames.get(data.roomId), userToSocketId);
         // io.to(data.roomId).emit('game state', game);
     });
+    socket.on('save hand', (data) => {
+        let game = activeGames.get(data.roomId);
+        if(!game){
+            console.log('game not found')
+            return;
+        }
+        if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+            throw new Error('bad deck');
+        }
+        // emitGameStateToPlayers(io, activeGames.get(data.roomId), userToSocketId);
+        io.to(data.roomId).emit('save game', game);
+    })
     socket.on('resume game', (data) => {
         console.log('data.state.players in resume game: ', data.state.players)
         let game = activeGames.get(data.roomId);
