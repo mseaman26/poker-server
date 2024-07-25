@@ -323,13 +323,18 @@ export function handleGameEvents (io, socket, userToSocketId) {
                 return;
             }
         }
+        //if room is full
+        if(game.players.length >= 8){
+            socket.emit('room full');
+            return
+        }
         console.log('add player event received')
         console.log('add player data: ', data)   
         activeGames.get(data.roomId).addPlayer(data.player);
         if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
             throw new Error('bad deck');
         }
-        // emitGameStateToPlayers(io, activeGames.get(data.roomId), userToSocketId);
+        emitGameStateToPlayers(io, activeGames.get(data.roomId), userToSocketId);
         // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
     })
     socket.on('remove player', (data) => {
