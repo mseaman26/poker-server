@@ -58,24 +58,30 @@ export function handleGameEvents (io, socket, userToSocketId) {
             activeGames.set(data.roomId, new Game(data.roomId, data.players, data.dealer, data.bigBlind, data.buyIn));
         }
 
-        if(activeGames.get(data.roomId).isFrontEndTest){
-            activeGames.get(data.roomId).deck.deck = [...threePlayerOneAndTwoSplit];
-            activeGames.get(data.roomId).startGameNoShuffle();
-            io.to(data.roomId).emit('start game', activeGames.get(data.roomId));
-            if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
-                throw new Error('bad deck');
-            }
-            emitGameStateToPlayers(io, activeGames.get(data.roomId), userToSocketId);
-            // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
-        }else{
-            activeGames.get(data.roomId).startGame();
-            io.to(data.roomId).emit('start game', activeGames.get(data.roomId));
-            if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
-                throw new Error('bad deck');
-            }
-            emitGameStateToPlayers(io, activeGames.get(data.roomId), userToSocketId);
-            // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        // if(activeGames.get(data.roomId).isFrontEndTest){
+        //     activeGames.get(data.roomId).deck.deck = [...threePlayerOneAndTwoSplit];
+        //     activeGames.get(data.roomId).startGameNoShuffle();
+        //     io.to(data.roomId).emit('start game', activeGames.get(data.roomId));
+        //     if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
+        //         throw new Error('bad deck');
+        //     }
+        //     emitGameStateToPlayers(io, activeGames.get(data.roomId), userToSocketId);
+        //     // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        // }else{
+        const game = activeGames.get(data.roomId);
+        if(data.isTest){
+            console.log('front end test')
+            game.isFrontEndTest = true;
         }
+        game.startGame();
+        io.to(data.roomId).emit('start game', game);
+        if(process.env !== 'production' && !checkDeck(game)){
+            throw new Error('bad deck');
+        }
+        console.log('game state after start game', game)
+        emitGameStateToPlayers(io, game, userToSocketId);
+        // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
+        // }
         
     });
     socket.on('game state', (roomId) => {

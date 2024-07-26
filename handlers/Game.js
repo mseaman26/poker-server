@@ -2,6 +2,7 @@
 import { Deck } from "./Deck.js";
 import { HandHandler } from "./handHandler.js";
 import { rankHands } from "./rankHands.js";
+import {deck2_1} from './fixedDecks.js'
 export class Game{
     constructor(roomId, players = [], dealer = 0, bigBlind, buyIn){
         this.roomId = roomId;
@@ -54,10 +55,14 @@ export class Game{
             this.bigBlind = this.newBigBlind
             this.newBigBlind = null
         }
-        if(!this.isTest){
+        if(!this.isTest && !this.isFrontEndTest){
             this.deck.shuffleDeck();
             this.deck.shuffleDeck();
             this.deck.shuffleDeck();
+        }
+        if(this.isFrontEndTest){
+            console.log('fixing the deck in startgame')
+            this.deck.deck = [...deck2_1]
         }
        
 
@@ -326,13 +331,17 @@ export class Game{
             this.newBigBlind = null
         }
         this.nextHandCallCount++
-        if(!this.isTest){
+        if(!this.isTest && !this.isFrontEndTest){
             this.deck.createDeck();
             this.deck.shuffleDeck();
             this.deck.shuffleDeck();
             this.deck.shuffleDeck();
         }
-        
+        if(this.isFrontEndTest){
+            console.log('fixing the deck in nexthand')
+            this.deck.deck = [...deck2_1]
+        }
+        console.log('deck at start of nexthand', this.deck.deck)
         this.flop = [];
         this.handWinnerInfo = []
         //handling exiting players
