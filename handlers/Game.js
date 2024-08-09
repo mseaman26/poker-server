@@ -61,7 +61,6 @@ export class Game{
             this.deck.shuffleDeck();
         }
         if(this.isFrontEndTest){
-            console.log('fixing the deck in startgame')
             this.deck.deck = [...deck2_1]
         }
        
@@ -125,26 +124,13 @@ export class Game{
                     this.players[i].chips += this.pot;
                     this.players[i].winAmount = this.pot
                     this.pot = 0;
-                    // if(this.isTest){
-                    //     this.nextHandNoShuffle();
-                    //     return
-                    // }
-                    // if(this.isFrontEndTest){
-                    //     this.nextHandNoShuffle();
-                    //     return
-                    // }
-                    // this.nextHand();
                 }
                 
             }
-            // this.nextHand()
-           
 
-            // this.handleNumericalHands();
             return
         }
         else if(this.allInCount + this.foldedCount + this.eliminatedCount >= this.players.length -1 && this.currentBet === 0 && this.players.length > 1){
-            console.log('flip cards in nextturn')
             //flip cards
             if(!this.flipCards){
                 this.snapShot = JSON.parse(JSON.stringify(this.players));
@@ -163,9 +149,6 @@ export class Game{
                     this.players[i].showCards = true
                 }
             }
-            // for(let i = 0; i < this.players.length; i++){
-            //     this.players[i].moneyInPot = 0;
-            // }
             while(this.flop.length < 5){
                 this.flop.push(this.deck.dealCard());
             }
@@ -177,17 +160,6 @@ export class Game{
         }
         else{
             this.turn = (this.turn + 1) % this.players.length;
-            // let secondHighest = 0
-            // let highest = 0
-            // for(let i = 0; i < this.players.length; i++){
-            //     if(this.players[i].chips > highest && !this.players[i].eliminated && !this.players[i].folded){
-            //         secondHighest = highest
-            //         highest = this.players[i].chips
-            //     }else if(this.players[i].chips > secondHighest && !this.players[i].eliminated && !this.players[i].folded){
-            //         secondHighest = this.players[i].chips + this.players[i].bet
-            //     }
-            // }
-            // this.maxBet = secondHighest
             if(this.turn === this.betIndex){
                 //square pot
                 for(let i = 0; i < this.players.length; i++){
@@ -219,8 +191,6 @@ export class Game{
     nextRound(){
         if(this.allInCount + this.foldedCount === this.players.length - 1){
             //flip cards
-            console.log('flip cards in next round')
-            // this.snapShot = JSON.parse(JSON.stringify(this.players));
             if(!this.flipCards){
                 this.snapShot = JSON.parse(JSON.stringify(this.players));
             }
@@ -338,10 +308,8 @@ export class Game{
             this.deck.shuffleDeck();
         }
         if(this.isFrontEndTest){
-            console.log('fixing the deck in nexthand')
             this.deck.deck = [...deck2_1]
         }
-        console.log('deck at start of nexthand', this.deck.deck)
         this.flop = [];
         this.handWinnerInfo = []
         //handling exiting players
@@ -439,12 +407,9 @@ export class Game{
         this.bet(this.bigBlind);
         this.betIndex = null;
         this.deck.dealPockets(this.players);
-        console.log('players after dealing pockets', this.players)
-        console.log('deck after dealing pockets', this.deck.deck)
         for(let i = 0; i < this.players.length; i++){
             this.players[i].action = ''
         }
-        console.log('players at end of nexthand', this.players)
         
     }
     checktotals(){
@@ -564,7 +529,6 @@ export class Game{
             calculatedNextTurn = (calculatedNextTurn + 1) % this.players.length
         }
         if(calculatedNextTurn === this.betIndex && this.foldedCount + this.allInCount + this.eliminatedCount >= this.players.length - 1 && this.eliminatedCount < this.players.length - 1){
-            console.log('flip cards in bet2, changing snapshot')
             this.snapShot = JSON.parse(JSON.stringify(this.players));
             this.flipCards = true
         }
@@ -672,43 +636,12 @@ export class Game{
                     this.pot -= winAmount;
                     splitDenom --;
                     
-                }
-                
-                // if(this.carryOver){
-                //     this.pot += this.carryOver;
-                //     this.carryOver = 0; 
-                // }
-                // if(this.players[ handledHands[i][0].index].allIn === null){
-                //     let splitPot = Math.floor(this.pot / handledHands[i].length);
-                //     let carryOver = this.pot % handledHands[i].length;
-                //     for(let j = 0; j < handledHands[i].length; j++){
-                //         this.players[handledHands[i][j].index].chips += splitPot;
-                //     }
-                // } else{
-                //     //if all in
-                // }         
+                }        
             }
             else{
-                // if(this.isTest){
-                //     this.nextHandNoShuffle();
-                //     return
-                // }
-                // if(this.isFrontEndTest){
-                //     this.nextHandNoShuffle();
-                //     return
-                // }
-                // this.nextHand();
                 return
             }
         }
-        // if(this.isTest){
-        //     this.nextHandNoShuffle();
-        //     return
-        // }
-        // if(this.isFrontEndTest){
-        //     this.nextHandNoShuffle();
-        //     return
-        // }
     }
     buyBack(playerIndex, amount){
         this.players[playerIndex].chips += amount;

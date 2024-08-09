@@ -1,66 +1,44 @@
-    //  /api/users
 
-    import { connectMongoDB } from '../lib/mongodb.js'
-    import User from '../models/user.js'
-    import app from 'express'
-    const userRoutes = app.Router()
-    //CREATE USER
-    userRoutes.post('/', async (req, res) => {
-        try {
-            console.log('request recieved')
-            console.log('req.body: ', req.params)
-            const { name, email, firebaseId, password } = await req.body;
-            await connectMongoDB();
-            
-            await User.create({ name, email, firebaseId });
-        
-            res.status(201).json({ message: "User registered." });
-        } 
-        catch (error) {
-            console.log('error: ', error)
-            res.status(500).json(
-            { message: "An error occurred while registering the user.", error }
-            );
-        }
-    })
-    //Delete User
-    userRoutes.delete('/:id', async (req, res) => {
-        
-        try {
-            const { firebaseId } = req.body;
-            await connectMongoDB();
-            const deletedUser = await User.findOneAndDelete({ 
-                firebaseId
-             });
-            res.status(200).json({ message: "User deleted." });
-        } 
-        catch (error) {
-            res.status(500).json(
-            { message: "An error occurred while deleting the user.", error }
-            );
-        }
-    })
-    //SEARCH USERS
-    userRoutes.get('/search/:searchTerm', async (req, res) => {
-        const searchTerm = req.params.searchTerm
-        try{
-            await connectMongoDB()
-            const users = await User.find({
-                $or: [
-                    {name: {
-                        $regex: searchTerm, $options: 'i'}},
-                    {email: {
-                        $regex: searchTerm,
-                        $options: 'i'
-                    }}
-                ]
-            })
-            res.status(200).json(users)
-        }catch(err){
-            console.log('err: ', err)
-            res.status(500).json(`${err}`)
-        }
-    })
-;
+import express from 'express';
+const router = express.Router();
+import bcrypt from 'bcrypt';
+import { signToken } from '../lib/auth.js';
 
-    export default userRoutes
+import User from '../models/user.js';
+
+
+router.post('/signup', async (req, res) => {
+    try {
+        const user = await new User({
+            name: req.body.name,
+            email: req.body.email,
+            password: await bcrypt.hash(req.body.password, 10)
+        });
+        await user.save();
+        const token = signToken(user);
+        res.status(201).json({user, token});
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+})
+
+router.post('/login', async (req, res) => {
+    try {
+        const user = await User.findOne({ 
+            email: req.body.email
+        });
+        if (!user) {
+            return res.status(401).send({ message: 'Invalid email or password' });
+        }
+        const correctPW = await bcrypt.compare(password, user.password);
+        if (!correctPW) {
+            return res.status(401).send({ message: 'Invalid email or password' });
+        }
+        const token = signToken(user);
+        res.status(200).json({ user, token });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+})
+
+export default router;

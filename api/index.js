@@ -1,5 +1,7 @@
-import app from 'express'
-const apiRoutes = app.Router()
+
+import express from 'express'
+const apiRoutes = express.Router()
+
 
 import userRoutes from './userRoutes.js'
 
