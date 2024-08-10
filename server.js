@@ -1,13 +1,5 @@
 import './env.js'
-import path from 'path';
 import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const envPath = path.resolve(__dirname, '.env');
-import { config } from 'dotenv';
-config({ path: envPath });
-
-
 import express from "express";
 const app = express();
 import http from "http";
@@ -16,12 +8,19 @@ import cors from "cors";
 import { handleJoinRoom, handleLeaveRoom, handleRoomDeleted } from "./handlers/roomHandlers.js";
 import { handleGameEvents } from "./handlers/gameHandlers.js";
 import apiRoutes  from './api/index.js'
+import { config } from 'dotenv';
+import path from 'path';
 
-import connectDB from './config/connection.js'
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Specify the path to the .env file
+const envPath = path.resolve(__dirname, '.env');
+
+// Load environment variables from the specified path
+config({ path: envPath });
 
 
-
-connectDB()
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
