@@ -10,6 +10,7 @@ import { handleGameEvents } from "./handlers/gameHandlers.js";
 import apiRoutes  from './api/index.js'
 import { config } from 'dotenv';
 import path from 'path';
+import connectDB from './config/connection.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,6 +38,9 @@ const io = new Server(server, {
     methods: ["GET", "POST", "DELETE", "PUT"],
   },
 });
+
+//connect to database
+connectDB();
 
 //map for keeping track of online uses
 const activeUsers = new Map()
