@@ -5,7 +5,7 @@ const app = express();
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
-import { handleJoinRoom, handleLeaveRoom, handleRoomDeleted } from "./handlers/roomHandlers.js";
+import { handleJoinRoom, handleLeaveRoom, handleRoomDeleted, sendUsersInrooms } from "./handlers/roomHandlers.js";
 import { handleGameEvents } from "./handlers/gameHandlers.js";
 import apiRoutes  from './api/index.js'
 import { config } from 'dotenv';
@@ -90,6 +90,9 @@ io.on("connection", (socket) =>   {
   socket.on('room deleted', (data) => {
     handleRoomDeleted(data.gameId);
   })
+  socket.on('request active games',() => [
+    sendUsersInrooms()
+  ])
 
   //game handlers
   handleGameEvents(io, socket, userToSocketId);

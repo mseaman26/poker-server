@@ -67,5 +67,9 @@ export const handleRoomDeleted = (room) => {
   }
 }
 
+export const sendUsersInrooms = () => {
+  console.log(usersInRooms)
+}
+
 
 
