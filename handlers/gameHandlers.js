@@ -58,16 +58,6 @@ export function handleGameEvents (io, socket, userToSocketId) {
             activeGames.set(data.roomId, new Game(data.roomId, data.players, data.dealer, data.bigBlind, data.buyIn));
         }
 
-        // if(activeGames.get(data.roomId).isFrontEndTest){
-        //     activeGames.get(data.roomId).deck.deck = [...threePlayerOneAndTwoSplit];
-        //     activeGames.get(data.roomId).startGameNoShuffle();
-        //     io.to(data.roomId).emit('start game', activeGames.get(data.roomId));
-        //     if(process.env !== 'production' && !checkDeck(activeGames.get(data.roomId))){
-        //         throw new Error('bad deck');
-        //     }
-        //     emitGameStateToPlayers(io, activeGames.get(data.roomId), userToSocketId);
-        //     // io.to(data.roomId).emit('game state', activeGames.get(data.roomId));
-        // }else{
         const game = activeGames.get(data.roomId);
         if(data.isTest){
             console.log('front end test')
@@ -92,6 +82,10 @@ export function handleGameEvents (io, socket, userToSocketId) {
             emitGameStateToPlayers(io, activeGames.get(roomId), userToSocketId);
             // io.to(roomId).emit('game state', activeGames.get(roomId));
         }
+    })
+    socket.on('request active games', (data) => {
+        console.log('active games: ', activeGames)
+        io.to(data.socketId).emit('active games', Array.from(activeGames.values()) )
     })
 
     socket.on('bet', (data) => {

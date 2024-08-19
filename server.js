@@ -49,8 +49,10 @@ const userToSocketId = new Map()
 io.on("connection", (socket) =>   {
 
   socket.on('activate user', (data) => {
+    console.log('activate user ', data)
     if(!activeUsers.has(data.id)){
       activeUsers.set(socket.id, {id: data.id, email: data.email, username: data.username, socketId: socket.id})
+      console.log('active users ', activeUsers)
       userToSocketId.set(data.id, socket.id)
     }
     io.emit('active users', Array.from(activeUsers.values()))
